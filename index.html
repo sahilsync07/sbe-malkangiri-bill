@@ -1,258 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>SBE, Malkangiri</title>
-  <style>
-    /* === Aurora Borealis Dark Theme === */
-    :root{
-      --bg1:#0f2027; --bg2:#203a43; --bg3:#2c5364;
-      --card: rgba(16,18,24,0.8);
-      --card-strong: rgba(16,18,24,0.9);
-      --line:#234b57;
-      --glow:#00ffd5;
-      --text:#e9f5f4;
-      --muted:#a7c7c5;
-      --accent1:#00c6ff; --accent2:#0072ff;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; padding:24px;
-      min-height:100vh;
-      font-family:system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 800px at 10% 0%, rgba(0,255,213,.15), transparent 60%),
-        radial-gradient(900px 600px at 100% 20%, rgba(0,183,255,.15), transparent 60%),
-        linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
-    }
-    .container{
-      max-width: 880px; margin: 0 auto;
-      background: var(--card);
-      border: 1px solid rgba(0,255,213,.15);
-      border-radius: 16px; padding: 24px;
-      box-shadow: 0 0 28px rgba(0,255,213,.18), inset 0 0 12px rgba(0,255,213,.06);
-      backdrop-filter: blur(6px);
-    }
-    h2{
-      margin: 0 0 18px; text-align:center; letter-spacing:.3px;
-      color:#7fffd4;
-      text-shadow: 0 0 12px rgba(0,255,213,.65);
-      font-weight:700;
-    }
+    <meta charset="UTF-8" />
+    <title>SBE, Malkangiri</title>
+    <style>
+        /* === Aurora Borealis Dark Theme === */
+        :root {
+            --bg1: #0f2027;
+            --bg2: #203a43;
+            --bg3: #2c5364;
+            --card: rgba(16, 18, 24, 0.8);
+            --card-strong: rgba(16, 18, 24, 0.9);
+            --line: #234b57;
+            --glow: #00ffd5;
+            --text: #e9f5f4;
+            --muted: #a7c7c5;
+            --accent1: #00c6ff;
+            --accent2: #0072ff;
+        }
 
-    /* Controls */
-    .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
-    label{font-size:14px; color:var(--muted)}
-    .field{
-      display:flex; align-items:center; gap:10px;
-      background: var(--card-strong); border:1px solid var(--line);
-      border-radius: 12px; padding:10px 12px;
-    }
-    input[type="number"], input[type="text"]{
-      background: transparent; border:none; outline:none; color:var(--text);
-      padding:8px 10px; border-radius:8px; width: 160px; font-size:16px;
-    }
-    ::placeholder{color:#8aa7a5}
+        * {
+            box-sizing: border-box
+        }
 
-    .btn{
-      border:none; cursor:pointer; border-radius:12px; padding:10px 16px;
-      background: linear-gradient(45deg, var(--accent1), var(--accent2));
-      color:white; font-weight:600; letter-spacing:.2px;
-      box-shadow: 0 0 16px rgba(0,183,255,.35);
-      transition: transform .05s ease, box-shadow .2s ease;
-    }
-    .btn:hover{ box-shadow: 0 0 20px rgba(0,183,255,.55) }
-    .btn:active{ transform: translateY(1px) }
+        body {
+            margin: 0;
+            padding: 24px;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(1200px 800px at 10% 0%, rgba(0, 255, 213, .15), transparent 60%),
+                radial-gradient(900px 600px at 100% 20%, rgba(0, 183, 255, .15), transparent 60%),
+                linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+        }
 
-    /* Items table */
-    #itemSection{ display:none; margin-top:16px; }
-    table{
-      width:100%; border-collapse: collapse; margin-top:12px;
-      background: rgba(8,10,14,.55); border-radius:12px; overflow:hidden;
-      border:1px solid var(--line);
-    }
-    th, td{
-      border-bottom:1px solid var(--line);
-      padding:10px 8px; text-align:center;
-    }
-    th{
-      background: rgba(0,200,200,.10);
-      color:#7fffd4; font-weight:700;
-    }
-    td input[type="number"], td input[type="text"]{
-      width: 100%; background: rgba(255,255,255,.04);
-      border:1px solid var(--line); padding:8px; border-radius:8px;
-    }
-    .col-item{ text-align:left }
-    .col-actions{ width:80px }
-    .btn-mini{
-      background: rgba(0,200,200,.15); border:1px solid var(--line);
-      color:#bffaf0; padding:6px 10px; border-radius:10px; cursor:pointer;
-    }
-    .btn-mini:hover{ background: rgba(0,200,200,.25) }
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid rgba(0, 255, 213, .15);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 0 28px rgba(0, 255, 213, .18), inset 0 0 12px rgba(0, 255, 213, .06);
+            backdrop-filter: blur(6px);
+        }
 
-    /* Bottom summary (fixed within container) */
-    .summary{
-      position: sticky; bottom: 0;
-      margin-top:18px; padding:12px;
-      background: linear-gradient(180deg, rgba(10,14,18,.65), rgba(10,14,18,.9));
-      border:1px solid var(--line); border-radius:14px;
-      box-shadow: 0 -8px 24px rgba(0,255,213,.12);
-    }
-    .totals { width:100%; border-collapse: collapse; }
-    .totals td{ padding:10px; border-bottom:1px dashed var(--line) }
-    .totals tr:last-child td{ border-bottom:none }
-    .right{text-align:right}
-    .highlight{ font-weight:700; color:#7fffd4; background: rgba(0,200,200,.07) }
-    .muted{ color:var(--muted); font-size:12px; margin-top:6px; text-align:right }
-  </style>
+        h2 {
+            margin: 0 0 18px;
+            text-align: center;
+            letter-spacing: .3px;
+            color: #7fffd4;
+            text-shadow: 0 0 12px rgba(0, 255, 213, .65);
+            font-weight: 700;
+        }
+
+        /* Controls */
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--muted)
+        }
+
+        .field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-strong);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            padding: 8px 10px;
+            border-radius: 8px;
+            width: 160px;
+            font-size: 16px;
+        }
+
+        ::placeholder {
+            color: #8aa7a5
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            padding: 10px 16px;
+            background: linear-gradient(45deg, var(--accent1), var(--accent2));
+            color: white;
+            font-weight: 600;
+            letter-spacing: .2px;
+            box-shadow: 0 0 16px rgba(0, 183, 255, .35);
+            transition: transform .05s ease, box-shadow .2s ease;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px rgba(0, 183, 255, .55)
+        }
+
+        .btn:active {
+            transform: translateY(1px)
+        }
+
+        /* Items table */
+        #itemSection {
+            display: none;
+            margin-top: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: rgba(8, 10, 14, .55);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--line);
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        th {
+            background: rgba(0, 200, 200, .10);
+            color: #7fffd4;
+            font-weight: 700;
+        }
+
+        td input[type="number"],
+        td input[type="text"] {
+            width: 100%;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--line);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .col-item {
+            text-align: left
+        }
+
+        .col-actions {
+            width: 80px
+        }
+
+        .btn-mini {
+            background: rgba(0, 200, 200, .15);
+            border: 1px solid var(--line);
+            color: #bffaf0;
+            padding: 6px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn-mini:hover {
+            background: rgba(0, 200, 200, .25)
+        }
+
+        /* Bottom summary (fixed within container) */
+        .summary {
+            position: sticky;
+            bottom: 0;
+            margin-top: 18px;
+            padding: 12px;
+            background: linear-gradient(180deg, rgba(10, 14, 18, .65), rgba(10, 14, 18, .9));
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: 0 -8px 24px rgba(0, 255, 213, .12);
+        }
+
+        .totals {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .totals td {
+            padding: 10px;
+            border-bottom: 1px dashed var(--line)
+        }
+
+        .totals tr:last-child td {
+            border-bottom: none
+        }
+
+        .right {
+            text-align: right
+        }
+
+        .highlight {
+            font-weight: 700;
+            color: #7fffd4;
+            background: rgba(0, 200, 200, .07)
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 6px;
+            text-align: right
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    <h2>SBE, Malkangiri</h2>
+    <div class="container">
+        <h2>SBE, Malkangiri</h2>
 
-    <!-- Top controls -->
-    <div class="row" style="margin-bottom:12px;">
-      <div class="field">
-        <label for="amount"><strong>Enter Amount</strong></label>
-        <input id="amount" type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" />
-      </div>
-      <button class="btn" onclick="showItems()">Make Bill</button>
+        <!-- Top controls -->
+        <div class="row" style="margin-bottom:12px;">
+            <div class="field">
+                <label for="amount"><strong>Enter Amount</strong></label>
+                <input id="amount" type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" />
+            </div>
+            <button class="btn" onclick="showItems()">Make Bill</button>
+        </div>
+
+        <!-- Item-wise section (hidden until Make Bill) -->
+        <div id="itemSection">
+            <div class="row" style="justify-content:space-between; margin-top:4px;">
+                <div class="muted">Add items (Qty × Rate). If item total &gt; 0, summary will use item-wise total
+                    automatically.</div>
+                <button class="btn-mini" onclick="addRow()">+ Add Item</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-item">Item</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Total</th>
+                        <th class="col-actions">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody"><!-- starts empty --></tbody>
+            </table>
+        </div>
+
+        <!-- Common, fixed bottom summary (always visible) -->
+        <div class="summary">
+            <table class="totals">
+                <tr>
+                    <td class="right">Amount:</td>
+                    <td id="sum-amount">₹0.00</td>
+                </tr>
+                <tr>
+                    <td class="right">Less: Discount</td>
+                    <td id="sum-discount">- ₹0.00</td>
+                </tr>
+                <tr>
+                    <td class="right">Add: 6% SGST</td>
+                    <td id="sum-sgst">₹0.00</td>
+                </tr>
+                <tr>
+                    <td class="right">Add: 6% CGST</td>
+                    <td id="sum-cgst">₹0.00</td>
+                </tr>
+                <tr class="highlight">
+                    <td class="right">Grand Total:</td>
+                    <td id="sum-grand">₹0.00</td>
+                </tr>
+            </table>
+            <div class="muted" id="sourceNote"></div>
+        </div>
     </div>
 
-    <!-- Item-wise section (hidden until Make Bill) -->
-    <div id="itemSection">
-      <div class="row" style="justify-content:space-between; margin-top:4px;">
-        <div class="muted">Add items (Qty × Rate). If item total &gt; 0, summary will use item-wise total automatically.</div>
-        <button class="btn-mini" onclick="addRow()">+ Add Item</button>
-      </div>
+    <script>
+        // precise GST-inclusive extraction: 12/112 (no UI display of the percentage)
+        const DISCOUNT_FRACTION = 12 / 112; // 0.10714285714285714
 
-      <table>
-        <thead>
-          <tr>
-            <th class="col-item">Item</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Total</th>
-            <th class="col-actions">Action</th>
-          </tr>
-        </thead>
-        <tbody id="itemsBody"><!-- starts empty --></tbody>
-      </table>
-    </div>
+        const itemsBody = document.getElementById('itemsBody');
+        const amountInput = document.getElementById('amount');
 
-    <!-- Common, fixed bottom summary (always visible) -->
-    <div class="summary">
-      <table class="totals">
-        <tr>
-          <td class="right">Amount:</td>
-          <td id="sum-amount">₹0.00</td>
-        </tr>
-        <tr>
-          <td class="right">Less: Discount</td>
-          <td id="sum-discount">- ₹0.00</td>
-        </tr>
-        <tr>
-          <td class="right">Add: 6% SGST</td>
-          <td id="sum-sgst">₹0.00</td>
-        </tr>
-        <tr>
-          <td class="right">Add: 6% CGST</td>
-          <td id="sum-cgst">₹0.00</td>
-        </tr>
-        <tr class="highlight">
-          <td class="right">Grand Total:</td>
-          <td id="sum-grand">₹0.00</td>
-        </tr>
-      </table>
-      <div class="muted" id="sourceNote"></div>
-    </div>
-  </div>
+        function fmt(n) { return "₹" + (isFinite(n) ? n.toFixed(2) : "0.00"); }
 
-  <script>
-    // precise GST-inclusive extraction: 12/112 (no UI display of the percentage)
-    const DISCOUNT_FRACTION = 12 / 112; // 0.10714285714285714
+        function showItems() {
+            const sec = document.getElementById('itemSection');
+            if (sec.style.display !== 'block') {
+                sec.style.display = 'block';
+            }
+            // If no rows yet, add one starter row
+            if (itemsBody.children.length === 0) addRow();
+        }
 
-    const itemsBody = document.getElementById('itemsBody');
-    const amountInput = document.getElementById('amount');
-
-    function fmt(n){ return "₹" + (isFinite(n)? n.toFixed(2) : "0.00"); }
-
-    function showItems(){
-      const sec = document.getElementById('itemSection');
-      if(sec.style.display !== 'block'){
-        sec.style.display = 'block';
-      }
-      // If no rows yet, add one starter row
-      if(itemsBody.children.length === 0) addRow();
-    }
-
-    function addRow(){
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
+        function addRow() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
         <td class="col-item"><input type="text" placeholder="Item name" oninput="recalc()" /></td>
         <td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()" /></td>
         <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
         <td class="rowTotal">₹0.00</td>
         <td class="col-actions"><button class="btn-mini" onclick="removeRow(this)">Remove</button></td>
       `;
-      itemsBody.appendChild(tr);
-    }
+            itemsBody.appendChild(tr);
+        }
 
-    function removeRow(btn){
-      const tr = btn.closest('tr');
-      tr.remove();
-      recalc();
-    }
+        function removeRow(btn) {
+            const tr = btn.closest('tr');
+            tr.remove();
+            recalc();
+        }
 
-    function computeItemsSubtotal(){
-      let subtotal = 0;
-      [...itemsBody.children].forEach(tr=>{
-        const qty  = parseFloat(tr.children[1].querySelector('input').value) || 0;
-        const rate = parseFloat(tr.children[2].querySelector('input').value) || 0;
-        const total = qty * rate;
-        tr.querySelector('.rowTotal').textContent = fmt(total).replace('₹',''); // show number only in cell
-        subtotal += total;
-      });
-      return subtotal;
-    }
+        function computeItemsSubtotal() {
+            let subtotal = 0;
+            [...itemsBody.children].forEach(tr => {
+                const qty = parseFloat(tr.children[1].querySelector('input').value) || 0;
+                const rate = parseFloat(tr.children[2].querySelector('input').value) || 0;
+                const total = qty * rate;
+                tr.querySelector('.rowTotal').textContent = fmt(total).replace('₹', ''); // show number only in cell
+                subtotal += total;
+            });
+            return subtotal;
+        }
 
-    function getActiveSubtotal(){
-      const itemsSubtotal = computeItemsSubtotal();
-      const amount = parseFloat(amountInput.value) || 0;
+        function getActiveSubtotal() {
+            const itemsSubtotal = computeItemsSubtotal();
+            const amount = parseFloat(amountInput.value) || 0;
 
-      // If any positive item-wise total exists, prefer item-wise; else use direct amount.
-      if(itemsSubtotal > 0){
-        updateSourceNote('Using item-wise total');
-        return itemsSubtotal;
-      }else{
-        updateSourceNote('Using entered amount');
-        return amount;
-      }
-    }
+            // If any positive item-wise total exists, prefer item-wise; else use direct amount.
+            if (itemsSubtotal > 0) {
+                updateSourceNote('Using item-wise total');
+                return itemsSubtotal;
+            } else {
+                updateSourceNote('Using entered amount');
+                return amount;
+            }
+        }
 
-    function updateSourceNote(msg){
-      document.getElementById('sourceNote').textContent = msg;
-    }
+        function updateSourceNote(msg) {
+            document.getElementById('sourceNote').textContent = msg;
+        }
 
-    function recalc(){
-      const subtotal = getActiveSubtotal();
+        function recalc() {
+            const subtotal = getActiveSubtotal();
 
-      const discount = subtotal * DISCOUNT_FRACTION;   // hidden 10.714... logic
-      const sgst = discount / 2;
-      const cgst = discount / 2;
-      const grand = subtotal; // (subtotal - discount + sgst + cgst) equals subtotal
+            const discount = subtotal * DISCOUNT_FRACTION;   // hidden 10.714... logic
+            const sgst = discount / 2;
+            const cgst = discount / 2;
+            const grand = subtotal; // (subtotal - discount + sgst + cgst) equals subtotal
 
-      document.getElementById('sum-amount').textContent   = fmt(subtotal);
-      document.getElementById('sum-discount').textContent = "- " + fmt(discount).replace('₹','₹');
-      document.getElementById('sum-sgst').textContent     = fmt(sgst);
-      document.getElementById('sum-cgst').textContent     = fmt(cgst);
-      document.getElementById('sum-grand').textContent    = fmt(grand);
-    }
+            document.getElementById('sum-amount').textContent = fmt(subtotal);
+            document.getElementById('sum-discount').textContent = "- " + fmt(discount).replace('₹', '₹');
+            document.getElementById('sum-sgst').textContent = fmt(sgst);
+            document.getElementById('sum-cgst').textContent = fmt(cgst);
+            document.getElementById('sum-grand').textContent = fmt(grand);
+        }
 
-    // Initial render with zeros visible
-    recalc();
-  </script>
+        // Initial render with zeros visible
+        recalc();
+    </script>
 </body>
+
 </html>
