@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>M/S Sri Brundabana Enterprises, Malkangiri</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>SBE, Malkangiri</h2>
+
+    <!-- Top controls -->
+    <div class="row" style="margin-bottom:12px;">
+      <div class="field">
+        <label for="amount"><strong>Enter Amount</strong></label>
+        <input id="amount" type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" />
+      </div>
+      <button class="btn" onclick="showItems()">Make Bill</button>
+    </div>
+
+    <!-- Item-wise section (hidden until Make Bill) -->
+    <div id="itemSection">
+      <div class="row" style="justify-content:space-between; margin-top:4px;">
+        <div class="muted">Add items (Qty × Rate). If item total &gt; 0, summary will use item-wise total automatically.</div>
+        <button class="btn-mini" onclick="addRow()">+ Add Item</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="col-item">Item</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Total</th>
+            <th class="col-actions">Action</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"><!-- starts empty --></tbody>
+      </table>
+    </div>
+
+    <!-- Common, fixed bottom summary (always visible) -->
+    <div class="summary">
+      <table class="totals">
+        <tr>
+          <td class="right">Amount:</td>
+          <td id="sum-amount">₹0.00</td>
+        </tr>
+        <tr>
+          <td class="right">Less: Discount</td>
+          <td id="sum-discount">- ₹0.00</td>
+        </tr>
+        <tr>
+          <td class="right">Add: 6% SGST</td>
+          <td id="sum-sgst">₹0.00</td>
+        </tr>
+        <tr>
+          <td class="right">Add: 6% CGST</td>
+          <td id="sum-cgst">₹0.00</td>
+        </tr>
+        <tr class="highlight">
+          <td class="right">Grand Total:</td>
+          <td id="sum-grand">₹0.00</td>
+        </tr>
+      </table>
+      <div class="muted" id="sourceNote"></div>
+    </div>
+  </div>
+
+  <script>
+    // precise GST-inclusive extraction: 12/112 (no UI display of the percentage)
+    const DISCOUNT_FRACTION = 12 / 112; // 0.10714285714285714
+
+    const itemsBody = document.getElementById('itemsBody');
+    const amountInput = document.getElementById('amount');
+
+    function fmt(n){ return "₹" + (isFinite(n)? n.toFixed(2) : "0.00"); }
+
+    function showItems(){
+      const sec = document.getElementById('itemSection');
+      if(sec.style.display !== 'block'){
+        sec.style.display = 'block';
+      }
+      // If no rows yet, add one starter row
+      if(itemsBody.children.length === 0) addRow();
+    }
+
+    function addRow(){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="col-item"><input type="text" placeholder="Item name" oninput="recalc()" /></td>
+        <td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()" /></td>
+        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
+        <td class="rowTotal">₹0.00</td>
+        <td class="col-actions"><button class="btn-mini" onclick="removeRow(this)">Remove</button></td>
+      `;
+      itemsBody.appendChild(tr);
+    }
+
+    function removeRow(btn){
+      const tr = btn.closest('tr');
+      tr.remove();
+      recalc();
+    }
+
+    function computeItemsSubtotal(){
+      let subtotal = 0;
+      [...itemsBody.children].forEach(tr=>{
+        const qty  = parseFloat(tr.children[1].querySelector('input').value) || 0;
+        const rate = parseFloat(tr.children[2].querySelector('input').value) || 0;
+        const total = qty * rate;
+        tr.querySelector('.rowTotal').textContent = fmt(total).replace('₹',''); // show number only in cell
+        subtotal += total;
+      });
+      return subtotal;
+    }
+
+    function getActiveSubtotal(){
+      const itemsSubtotal = computeItemsSubtotal();
+      const amount = parseFloat(amountInput.value) || 0;
+
+      // If any positive item-wise total exists, prefer item-wise; else use direct amount.
+      if(itemsSubtotal > 0){
+        updateSourceNote('Using item-wise total');
+        return itemsSubtotal;
+      }else{
+        updateSourceNote('Using entered amount');
+        return amount;
+      }
+    }
+
+    function updateSourceNote(msg){
+      document.getElementById('sourceNote').textContent = msg;
+    }
+
+    function recalc(){
+      const subtotal = getActiveSubtotal();
+
+      const discount = subtotal * DISCOUNT_FRACTION;   // hidden 10.714... logic
+      const sgst = discount / 2;
+      const cgst = discount / 2;
+      const grand = subtotal; // (subtotal - discount + sgst + cgst) equals subtotal
+
+      document.getElementById('sum-amount').textContent   = fmt(subtotal);
+      document.getElementById('sum-discount').textContent = "- " + fmt(discount).replace('₹','₹');
+      document.getElementById('sum-sgst').textContent     = fmt(sgst);
+      document.getElementById('sum-cgst').textContent     = fmt(cgst);
+      document.getElementById('sum-grand').textContent    = fmt(grand);
+    }
+
+    // Initial render with zeros visible
+    recalc();
+  </script>
+</body>
+</html>
