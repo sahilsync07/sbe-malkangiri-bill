@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SBE, Malkangiri</title>
     <style>
-    /* === Aurora Borealis Dark Theme === */
         :root {
             --bg1: #0f2027;
             --bg2: #203a43;
@@ -18,6 +18,7 @@
             --muted: #a7c7c5;
             --accent1: #00c6ff;
             --accent2: #0072ff;
+        }
 
         * {
             box-sizing: border-box
@@ -42,56 +43,84 @@
             border: 1px solid rgba(0, 255, 213, .15);
             border-radius: 16px;
             padding: 24px;
+            padding-bottom: 120px;
+            /* Extra space prevents summary overlap */
             box-shadow: 0 0 28px rgba(0, 255, 213, .18), inset 0 0 12px rgba(0, 255, 213, .06);
             backdrop-filter: blur(6px);
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
         }
 
         @media (max-width: 600px) {
             body {
                 padding: 8px;
             }
+
             .container {
                 padding: 10px;
+                padding-bottom: 160px;
                 border-radius: 8px;
-                box-shadow: 0 0 12px rgba(0,255,213,.12);
+                box-shadow: 0 0 12px rgba(0, 255, 213, .12);
             }
+
             h2 {
                 font-size: 1.2rem;
             }
+
             .row {
                 flex-direction: column;
                 gap: 8px;
                 align-items: stretch;
             }
+
             .field {
                 flex-direction: column;
                 gap: 4px;
                 padding: 8px 6px;
             }
-            input[type="number"], input[type="text"] {
+
+            input[type="number"],
+            input[type="text"] {
                 width: 100%;
                 font-size: 15px;
                 padding: 6px 8px;
             }
-            .btn, .btn-mini {
+
+            .btn,
+            .btn-mini {
                 width: 100%;
                 padding: 10px 0;
                 font-size: 1rem;
             }
-            table, .totals {
+
+            table,
+            .totals {
                 font-size: 13px;
             }
-            th, td {
+
+            th,
+            td {
                 padding: 6px 4px;
             }
+
             .col-actions {
                 width: 60px;
             }
+
             .summary {
-                padding: 8px;
+                position: static;
+                margin-top: 18px;
+                box-shadow: none;
+                width: 100%;
                 border-radius: 8px;
             }
-        }
+
+            .table-container {
+                overflow-x: auto;
+            }
         }
 
         h2 {
@@ -103,7 +132,6 @@
             font-weight: 700;
         }
 
-        /* Controls */
         .row {
             display: flex;
             gap: 12px;
@@ -163,7 +191,6 @@
             transform: translateY(1px)
         }
 
-        /* Items table */
         #itemSection {
             display: none;
             margin-top: 16px;
@@ -222,7 +249,6 @@
             background: rgba(0, 200, 200, .25)
         }
 
-        /* Bottom summary (fixed within container) */
         .summary {
             position: sticky;
             bottom: 0;
@@ -270,7 +296,6 @@
 <body>
     <div class="container">
         <h2>SBE, Malkangiri</h2>
-
         <!-- Top controls -->
         <div class="row" style="margin-bottom:12px;">
             <div class="field">
@@ -279,35 +304,45 @@
             </div>
             <button class="btn" onclick="showItems()">Make Bill</button>
         </div>
-
-        <!-- Item-wise section (hidden until Make Bill) -->
+        <!-- Item-wise section -->
         <div id="itemSection">
             <div class="row" style="justify-content:space-between; margin-top:4px;">
-                <div class="muted">Add items (Qty × Rate). If item total &gt; 0, summary will use item-wise total
+                <div class="muted">Add items (Qty × Rate − Discount). If item total &gt; 0, summary will use item-wise
+                    total
                     automatically.</div>
                 <button class="btn-mini" onclick="addRow()">+ Add Item</button>
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-item">Item</th>
-                        <th>Qty</th>
-                        <th>Rate</th>
-                        <th>Total</th>
-                        <th class="col-actions">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsBody"><!-- starts empty --></tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-item">Item</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Discount</th>
+                            <th>Total</th>
+                            <th class="col-actions">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody"><!-- starts empty --></tbody>
+                </table>
+            </div>
         </div>
-
-        <!-- Common, fixed bottom summary (always visible) -->
+        <!-- Summary -->
         <div class="summary">
             <table class="totals">
                 <tr>
                     <td class="right">Amount:</td>
                     <td id="sum-amount">₹0.00</td>
+                </tr>
+                <tr>
+                    <td class="right">
+                        Extra Discount %:
+                        <input id="extraDiscountPercent" type="number" min="0" max="100" step="0.01" value="0"
+                            style="width:60px; background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--text); border-radius:6px; padding:2px 6px;"
+                            oninput="recalc()" />
+                    </td>
+                    <td id="sum-extra-discount">- ₹0.00</td>
                 </tr>
                 <tr>
                     <td class="right">Less: Discount</td>
@@ -329,60 +364,48 @@
             <div class="muted" id="sourceNote"></div>
         </div>
     </div>
-
     <script>
-        // precise GST-inclusive extraction: 12/112 (no UI display of the percentage)
-        const DISCOUNT_FRACTION = 12 / 112; // 0.10714285714285714
-
+        // GST extraction factor
+        const DISCOUNT_FRACTION = 12 / 112;
         const itemsBody = document.getElementById('itemsBody');
         const amountInput = document.getElementById('amount');
-
         function fmt(n) { return "₹" + (isFinite(n) ? n.toFixed(2) : "0.00"); }
-
         function showItems() {
             const sec = document.getElementById('itemSection');
-            if (sec.style.display !== 'block') {
-                sec.style.display = 'block';
-            }
-            // If no rows yet, add one starter row
+            if (sec.style.display !== 'block') sec.style.display = 'block';
             if (itemsBody.children.length === 0) addRow();
         }
-
         function addRow() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-        <td class="col-item"><input type="text" placeholder="Item name" oninput="recalc()" /></td>
-        <td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()" /></td>
-        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
-        <td class="rowTotal">₹0.00</td>
-        <td class="col-actions"><button class="btn-mini" onclick="removeRow(this)">Remove</button></td>
-      `;
+                <td class="col-item"><input type="text" placeholder="Item name" oninput="recalc()" /></td>
+                <td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()" /></td>
+                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
+                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
+                <td class="rowTotal">₹0.00</td>
+                <td class="col-actions"><button class="btn-mini" onclick="removeRow(this)">Remove</button></td>
+            `;
             itemsBody.appendChild(tr);
         }
-
         function removeRow(btn) {
-            const tr = btn.closest('tr');
-            tr.remove();
+            btn.closest('tr').remove();
             recalc();
         }
-
         function computeItemsSubtotal() {
             let subtotal = 0;
             [...itemsBody.children].forEach(tr => {
-                const qty = parseFloat(tr.children[1].querySelector('input').value) || 0;
-                const rate = parseFloat(tr.children[2].querySelector('input').value) || 0;
-                const total = qty * rate;
-                tr.querySelector('.rowTotal').textContent = fmt(total).replace('₹', ''); // show number only in cell
+                const qty = parseFloat(tr.children[4].querySelector('input').value) || 0;
+                const rate = parseFloat(tr.children[5].querySelector('input').value) || 0;
+                const discount = parseFloat(tr.children[6].querySelector('input').value) || 0;
+                const total = qty * rate - discount;
+                tr.querySelector('.rowTotal').textContent = (isFinite(total) ? "₹" + total.toFixed(2) : "₹0.00");
                 subtotal += total;
             });
             return subtotal;
         }
-
         function getActiveSubtotal() {
             const itemsSubtotal = computeItemsSubtotal();
             const amount = parseFloat(amountInput.value) || 0;
-
-            // If any positive item-wise total exists, prefer item-wise; else use direct amount.
             if (itemsSubtotal > 0) {
                 updateSourceNote('Using item-wise total');
                 return itemsSubtotal;
@@ -391,27 +414,26 @@
                 return amount;
             }
         }
-
         function updateSourceNote(msg) {
             document.getElementById('sourceNote').textContent = msg;
         }
-
         function recalc() {
-            const subtotal = getActiveSubtotal();
-
-            const discount = subtotal * DISCOUNT_FRACTION;   // hidden 10.714... logic
-            const sgst = discount / 2;
-            const cgst = discount / 2;
-            const grand = subtotal; // (subtotal - discount + sgst + cgst) equals subtotal
-
+            let subtotal = getActiveSubtotal();
+            const extraPercent = parseFloat(document.getElementById('extraDiscountPercent').value) || 0;
+            const extraDiscount = subtotal * (extraPercent / 100);
+            const discountBase = subtotal - extraDiscount;
+            const discount = discountBase * DISCOUNT_FRACTION;
+            const taxable = discountBase - discount;
+            const sgst = taxable * 0.06;
+            const cgst = taxable * 0.06;
+            const grand = taxable + sgst + cgst;
             document.getElementById('sum-amount').textContent = fmt(subtotal);
-            document.getElementById('sum-discount').textContent = "- " + fmt(discount).replace('₹', '₹');
+            document.getElementById('sum-extra-discount').textContent = "- " + fmt(extraDiscount);
+            document.getElementById('sum-discount').textContent = "- " + fmt(discount);
             document.getElementById('sum-sgst').textContent = fmt(sgst);
             document.getElementById('sum-cgst').textContent = fmt(cgst);
             document.getElementById('sum-grand').textContent = fmt(grand);
         }
-
-        // Initial render with zeros visible
         recalc();
     </script>
 </body>
