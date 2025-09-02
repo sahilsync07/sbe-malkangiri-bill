@@ -4,437 +4,612 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SBE, Malkangiri</title>
+    <title>GST TAX INVOICE - S.B. ENTERPRISES</title>
     <style>
         :root {
             --bg1: #0f2027;
             --bg2: #203a43;
             --bg3: #2c5364;
-            --card: rgba(16, 18, 24, 0.8);
-            --card-strong: rgba(16, 18, 24, 0.9);
+            --card: rgba(16, 18, 24, 0.88);
+            --card-strong: rgba(16, 18, 24, 0.96);
             --line: #234b57;
             --glow: #00ffd5;
             --text: #e9f5f4;
             --muted: #a7c7c5;
             --accent1: #00c6ff;
             --accent2: #0072ff;
-        }
-
-        * {
-            box-sizing: border-box
+            --container-padding: 32px;
+            --container-padding-mobile: 10px;
+            --bottom-gap: 32px;
+            --input-pad: 7px 10px;
         }
 
         body {
             margin: 0;
-            padding: 24px;
+            padding: 0;
             min-height: 100vh;
             font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
             color: var(--text);
             background:
-                radial-gradient(1200px 800px at 10% 0%, rgba(0, 255, 213, .15), transparent 60%),
-                radial-gradient(900px 600px at 100% 20%, rgba(0, 183, 255, .15), transparent 60%),
+                radial-gradient(1200px 800px at 10% 0%, rgba(0, 255, 213, .12), transparent 60%),
+                radial-gradient(900px 600px at 100% 20%, rgba(0, 183, 255, .11), transparent 60%),
                 linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+            min-width: 300px;
         }
 
-        .container {
-            max-width: 880px;
+        .bill-container {
+            max-width: 1280px;
+            min-height: 96vh;
             margin: 0 auto;
             background: var(--card);
-            border: 1px solid rgba(0, 255, 213, .15);
-            border-radius: 16px;
-            padding: 24px;
-            padding-bottom: 120px;
-            /* Extra space prevents summary overlap */
-            box-shadow: 0 0 28px rgba(0, 255, 213, .18), inset 0 0 12px rgba(0, 255, 213, .06);
-            backdrop-filter: blur(6px);
+            border: 1px solid rgba(0, 255, 213, 0.10);
+            border-radius: 18px;
+            padding: var(--container-padding);
+            box-shadow: 0 0 34px rgba(0, 255, 213, .17), inset 0 0 16px rgba(0, 255, 213, .11);
+            display: flex;
+            flex-direction: column;
         }
 
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 8px;
-            }
-
-            .container {
-                padding: 10px;
-                padding-bottom: 160px;
-                border-radius: 8px;
-                box-shadow: 0 0 12px rgba(0, 255, 213, .12);
-            }
-
-            h2 {
-                font-size: 1.2rem;
-            }
-
-            .row {
-                flex-direction: column;
-                gap: 8px;
-                align-items: stretch;
-            }
-
-            .field {
-                flex-direction: column;
-                gap: 4px;
-                padding: 8px 6px;
-            }
-
-            input[type="number"],
-            input[type="text"] {
-                width: 100%;
-                font-size: 15px;
-                padding: 6px 8px;
-            }
-
-            .btn,
-            .btn-mini {
-                width: 100%;
-                padding: 10px 0;
-                font-size: 1rem;
-            }
-
-            table,
-            .totals {
-                font-size: 13px;
-            }
-
-            th,
-            td {
-                padding: 6px 4px;
-            }
-
-            .col-actions {
-                width: 60px;
-            }
-
-            .summary {
-                position: static;
-                margin-top: 18px;
-                box-shadow: none;
-                width: 100%;
-                border-radius: 8px;
-            }
-
-            .table-container {
-                overflow-x: auto;
-            }
-        }
-
-        h2 {
-            margin: 0 0 18px;
+        .invoice-head {
             text-align: center;
-            letter-spacing: .3px;
-            color: #7fffd4;
-            text-shadow: 0 0 12px rgba(0, 255, 213, .65);
-            font-weight: 700;
+            margin-bottom: 18px;
         }
 
-        .row {
+        .party-section {
+            font-size: 15px;
+            margin-bottom: 20px;
             display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        label {
-            font-size: 14px;
-            color: var(--muted)
-        }
-
-        .field {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .party-box {
+            flex: 1;
+            min-width: 260px;
             background: var(--card-strong);
             border: 1px solid var(--line);
             border-radius: 12px;
-            padding: 10px 12px;
+            padding: 14px 16px 10px 16px;
         }
 
+        .party-box label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-right: 6px;
+        }
+
+        input[type="text"],
         input[type="number"],
-        input[type="text"] {
-            background: transparent;
-            border: none;
+        input[type="date"] {
+            background: rgba(0, 0, 0, 0.09);
+            border: 1px solid var(--line);
             outline: none;
             color: var(--text);
-            padding: 8px 10px;
-            border-radius: 8px;
-            width: 160px;
             font-size: 16px;
+            padding: var(--input-pad);
+            border-radius: 7px;
+            margin: 2px 0;
+            width: 96%;
+            transition: border 0.13s, background 0.14s;
         }
 
-        ::placeholder {
-            color: #8aa7a5
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus {
+            border: 1.5px solid var(--glow);
+            background: rgba(0, 255, 213, 0.08);
         }
 
-        .btn {
-            border: none;
-            cursor: pointer;
-            border-radius: 12px;
-            padding: 10px 16px;
-            background: linear-gradient(45deg, var(--accent1), var(--accent2));
-            color: white;
-            font-weight: 600;
-            letter-spacing: .2px;
-            box-shadow: 0 0 16px rgba(0, 183, 255, .35);
-            transition: transform .05s ease, box-shadow .2s ease;
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        .btn:hover {
-            box-shadow: 0 0 20px rgba(0, 183, 255, .55)
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
-        .btn:active {
-            transform: translateY(1px)
+        .col-party {
+            width: 99%;
         }
 
-        #itemSection {
-            display: none;
-            margin-top: 16px;
+        .bill-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 16px;
         }
 
-        table {
+        table.bill-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px;
-            background: rgba(8, 10, 14, .55);
-            border-radius: 12px;
-            overflow: hidden;
+            margin-top: 8px;
+            background: rgba(8, 10, 14, .5);
+            border-radius: 16px;
             border: 1px solid var(--line);
+            min-width: 800px;
         }
 
         th,
         td {
             border-bottom: 1px solid var(--line);
-            padding: 10px 8px;
+            padding: 8px 6px;
             text-align: center;
+            font-size: 15px;
         }
 
         th {
-            background: rgba(0, 200, 200, .10);
+            background: rgba(0, 200, 200, .09);
             color: #7fffd4;
             font-weight: 700;
+            letter-spacing: 1.2px;
         }
 
-        td input[type="number"],
-        td input[type="text"] {
-            width: 100%;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid var(--line);
-            padding: 8px;
-            border-radius: 8px;
+        td {
+            vertical-align: middle;
         }
 
-        .col-item {
-            text-align: left
+        .col-desc {
+            text-align: left;
         }
 
-        .col-actions {
-            width: 80px
+        .bill-table input[type=text],
+        .bill-table input[type=number] {
+            text-align: center;
+            font-size: 15px;
+            background: none;
+            padding: 7px 5px;
+            width: 99%;
+            border: none;
+            background: transparent;
+        }
+
+        .col-desc input {
+            text-align: left;
         }
 
         .btn-mini {
-            background: rgba(0, 200, 200, .15);
-            border: 1px solid var(--line);
-            color: #bffaf0;
-            padding: 6px 10px;
-            border-radius: 10px;
+            background: linear-gradient(45deg, var(--accent1), var(--accent2));
+            border: none;
+            color: #fff;
+            padding: 7px 16px;
+            border-radius: 7px;
             cursor: pointer;
+            transition: transform .08s, box-shadow .2s;
+            font-size: 15px;
+            font-weight: 500;
+            margin: 2px 0;
+            box-shadow: 0 2px 10px 0 rgba(0, 200, 245, .07);
         }
 
         .btn-mini:hover {
-            background: rgba(0, 200, 200, .25)
+            box-shadow: 0 0 17px #00ffd5cc;
+            transform: scale(1.03);
         }
 
-        .summary {
-            position: sticky;
-            bottom: 0;
-            margin-top: 18px;
-            padding: 12px;
-            background: linear-gradient(180deg, rgba(10, 14, 18, .65), rgba(10, 14, 18, .9));
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            box-shadow: 0 -8px 24px rgba(0, 255, 213, .12);
+        .btn-add {
+            margin: 10px 0 0 0;
+            display: block;
+            width: 160px;
+            font-size: 16px;
         }
 
-        .totals {
-            width: 100%;
-            border-collapse: collapse;
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+            margin-top: 32px;
+            margin-bottom: var(--bottom-gap);
         }
 
-        .totals td {
-            padding: 10px;
-            border-bottom: 1px dashed var(--line)
-        }
-
-        .totals tr:last-child td {
-            border-bottom: none
-        }
-
-        .right {
-            text-align: right
-        }
-
-        .highlight {
-            font-weight: 700;
-            color: #7fffd4;
-            background: rgba(0, 200, 200, .07)
-        }
-
-        .muted {
+        .in-words-block {
+            min-width: 330px;
+            max-width: 40vw;
+            margin-bottom: 20px;
             color: var(--muted);
-            font-size: 12px;
-            margin-top: 6px;
-            text-align: right
+            font-size: 15.5px;
+            font-style: italic;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(8, 10, 14, 0.18);
+            padding: 18px 24px 14px 17px;
+            box-shadow: 0 1px 14px 0 rgba(0, 255, 213, .039);
+        }
+
+        #printBtn {
+            display: block;
+            background: linear-gradient(45deg, var(--accent1), var(--accent2));
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 17px;
+            margin: 12px 2px 0 0;
+            padding: 10px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px 0 rgba(0, 200, 245, .11);
+            letter-spacing: 0.2px;
+            transition: box-shadow 0.13s, transform .13s;
+        }
+
+        #printBtn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 15px #00ffd5cc;
+        }
+
+        .summary-bot {
+            min-width: 340px;
+            text-align: right;
+            flex: 1 1 340px;
+        }
+
+        .summary-bot table {
+            width: auto;
+            float: right;
+            background: transparent;
+            border: none;
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+
+        .summary-bot td {
+            border: none;
+            padding: 6px 12px;
+            font-size: 15.5px;
+            color: #e9f5f4;
+            white-space: nowrap;
+        }
+
+        .summary-label {
+            text-align: right;
+            min-width: 130px;
+            color: var(--muted);
+        }
+
+        .summary-value {
+            text-align: left;
+            min-width: 120px;
+            font-weight: 600;
+            color: #7fffd4;
+            font-size: 16px;
+        }
+
+        .grand-row td {
+            color: #7fffd4;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        ::-webkit-scrollbar {
+            height: 9px;
+            background: #1b3440;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #25798e;
+        }
+
+        @media (max-width: 900px) {
+            .bill-container {
+                padding: 9px;
+            }
+
+            .party-section {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            th,
+            td {
+                font-size: 12px;
+                padding: 5px;
+            }
+
+            .summary-bot table td {
+                font-size: 13px;
+            }
+
+            .summary-label {
+                min-width: 72px;
+            }
+
+            .bottom-bar {
+                gap: 12px;
+            }
+
+            .in-words-block {
+                min-width: 0;
+                max-width: 100vw;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .party-section {
+                gap: 8px;
+            }
+
+            .bill-container {
+                padding: var(--container-padding-mobile);
+            }
+
+            .in-words-block {
+                font-size: 13px;
+                padding: 10px 7px;
+            }
+
+            .summary-label,
+            .summary-value {
+                min-width: 70px;
+                font-size: 12.5px;
+            }
+
+            .bottom-bar {
+                flex-direction: column;
+                margin-bottom: var(--container-padding-mobile);
+            }
+        }
+
+        @media print {
+
+            body,
+            .bill-container {
+                background: #fff !important;
+                box-shadow: none !important;
+            }
+
+            .party-box,
+            .bill-container,
+            .bottom-bar,
+            th,
+            td,
+            .in-words-block,
+            .summary-bot table {
+                background: #fff !important;
+                color: #222 !important;
+                border-color: #888 !important;
+                box-shadow: none !important;
+            }
+
+            th {
+                color: #1e1e1e !important;
+            }
+
+            .btn-mini,
+            .btn-add,
+            #printBtn {
+                display: none !important;
+            }
+
+            input,
+            select,
+            textarea {
+                border: none !important;
+                background: none !important;
+                box-shadow: none !important;
+                color: #222 !important;
+                outline: 0 !important;
+            }
+
+            input[type="date"]::-webkit-input-placeholder {
+                color: transparent;
+            }
+
+            input:focus {
+                outline: none;
+            }
+
+            .party-section,
+            .bottom-bar {
+                page-break-inside: avoid;
+            }
+
+            .bill-table-container,
+            .bill-table {
+                page-break-inside: avoid;
+            }
+
+            /* Enforce 25 visible rows per print page A4 */
+            .bill-table tbody tr {
+                height: 24px;
+                min-height: 24px;
+            }
+
+            .bill-table tbody {
+                max-height: 600px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h2>SBE, Malkangiri</h2>
-        <!-- Top controls -->
-        <div class="row" style="margin-bottom:12px;">
-            <div class="field">
-                <label for="amount"><strong>Enter Amount</strong></label>
-                <input id="amount" type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" />
+    <div class="bill-container">
+        <div class="invoice-head">
+            <div style="font-size:18px;font-weight:500;">
+                <span>TAX INVOICE</span>
+            <h1 style="margin:6px 0 3px;letter-spacing:2px;font-size:1.7em;color:#7fffd4;text-shadow:0 0 8px #00ffd5cc">
+                M/S. SRI BRUNDABAN ENTERPRISES</h1>
+            
             </div>
-            <button class="btn" onclick="showItems()">Make Bill</button>
+            <div style="font-size:13px;color:#a7c7c5;margin:2px 0 0;">
+                GROUND FLOOR OF HOTEL RAJSHREE PALACE, BALIMELA BY PASS CANAL ROAD, MALKANGIRI, ODISHA, PIN: 764045<br>
+                GSTIN: <b>21ADKPC5405A1ZI</b> &nbsp; Email: <span style="font-size:12px;">sbe.rayagada@gmail.com</span>
+            </div>
+            <div style="font-size: 13px;margin-top:4px;">Cell: 8249252619, 9438265976, 9437094667</div>
         </div>
-        <!-- Item-wise section -->
-        <div id="itemSection">
-            <div class="row" style="justify-content:space-between; margin-top:4px;">
-                <div class="muted">Add items (Qty × Rate − Discount). If item total &gt; 0, summary will use item-wise
-                    total
-                    automatically.</div>
-                <button class="btn-mini" onclick="addRow()">+ Add Item</button>
+        <div class="party-section">
+            <div class="party-box">
+                <label for="partyName"><b>To Party:</b></label>
+                <input type="text" id="partyName" class="col-party" placeholder="Full Party Name" autocomplete="off" />
+                <label for="partyMob">Mob:</label>
+                <input type="text" id="partyMob" placeholder="Mobile No." autocomplete="off" />
             </div>
-            <div class="table-container">
+            <div class="party-box">
+                <label for="invNo"><b>Invoice No.</b></label>
+                <input type="text" id="invNo" style="width:80px;" placeholder="No." autocomplete="off" />
+                <br>
+                <label for="invDate"><b>Date</b></label>
+                <input type="date" id="invDate" style="width:170px;" />
+            </div>
+        </div>
+        <div class="bill-table-container">
+            <table class="bill-table" id="billTable">
+                <thead>
+                    <tr>
+                        <th>Sl.</th>
+                        <th class="col-desc">DESCRIPTION</th>
+                        <th>MRP</th>
+                        <th>Qty</th>
+                        <th>Discount&nbsp;%</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="billBody">
+                </tbody>
+            </table>
+            <button class="btn-mini btn-add" onclick="addRow()">+ Add Item</button>
+        </div>
+        <div class="bottom-bar">
+            <div class="in-words-block" id="in-words">Rupees in Words:</div>
+            <div class="summary-bot">
                 <table>
-                    <thead>
-                        <tr>
-                            <th class="col-item">Item</th>
-                            <th>Qty</th>
-                            <th>Rate</th>
-                            <th>Discount</th>
-                            <th>Total</th>
-                            <th class="col-actions">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsBody"><!-- starts empty --></tbody>
+                    <tr>
+                        <td class="summary-label">Total</td>
+                        <td class="summary-value" id="sum-total">₹0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="summary-label">
+                            Extra Discount %:
+                            <input id="extraDiscountPercent" type="number" min="0" max="100" step="0.01" value="0"
+                                style="width:55px; background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--text); border-radius:6px; padding:0 6px;"
+                                oninput="recalcBill()" />
+                        </td>
+                        <td class="summary-value" id="sum-extra-discount">- ₹0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="summary-label">Less Discount</td>
+                        <td class="summary-value" id="sum-discount">₹0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="summary-label">Add CGST @ 6%</td>
+                        <td class="summary-value" id="sum-cgst">₹0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="summary-label">Add SGST @ 6%</td>
+                        <td class="summary-value" id="sum-sgst">₹0.00</td>
+                    </tr>
+                    <tr class="grand-row">
+                        <td class="summary-label">Grand Total</td>
+                        <td class="summary-value" id="sum-grand">₹0.00</td>
+                    </tr>
                 </table>
             </div>
         </div>
-        <!-- Summary -->
-        <div class="summary">
-            <table class="totals">
-                <tr>
-                    <td class="right">Amount:</td>
-                    <td id="sum-amount">₹0.00</td>
-                </tr>
-                <tr>
-                    <td class="right">
-                        Extra Discount %:
-                        <input id="extraDiscountPercent" type="number" min="0" max="100" step="0.01" value="0"
-                            style="width:60px; background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--text); border-radius:6px; padding:2px 6px;"
-                            oninput="recalc()" />
-                    </td>
-                    <td id="sum-extra-discount">- ₹0.00</td>
-                </tr>
-                <tr>
-                    <td class="right">Less: Discount</td>
-                    <td id="sum-discount">- ₹0.00</td>
-                </tr>
-                <tr>
-                    <td class="right">Add: 6% SGST</td>
-                    <td id="sum-sgst">₹0.00</td>
-                </tr>
-                <tr>
-                    <td class="right">Add: 6% CGST</td>
-                    <td id="sum-cgst">₹0.00</td>
-                </tr>
-                <tr class="highlight">
-                    <td class="right">Grand Total:</td>
-                    <td id="sum-grand">₹0.00</td>
-                </tr>
-            </table>
-            <div class="muted" id="sourceNote"></div>
-        </div>
     </div>
     <script>
-        // GST extraction factor
+        const billBody = document.getElementById('billBody');
+        const sumTotal = document.getElementById('sum-total');
+        const sumExtraDiscount = document.getElementById('sum-extra-discount');
+        const sumDiscount = document.getElementById('sum-discount');
+        const sumCGST = document.getElementById('sum-cgst');
+        const sumSGST = document.getElementById('sum-sgst');
+        const sumGrand = document.getElementById('sum-grand');
+        const inWords = document.getElementById('in-words');
+        const extraDiscountInput = document.getElementById('extraDiscountPercent');
         const DISCOUNT_FRACTION = 12 / 112;
-        const itemsBody = document.getElementById('itemsBody');
-        const amountInput = document.getElementById('amount');
-        function fmt(n) { return "₹" + (isFinite(n) ? n.toFixed(2) : "0.00"); }
-        function showItems() {
-            const sec = document.getElementById('itemSection');
-            if (sec.style.display !== 'block') sec.style.display = 'block';
-            if (itemsBody.children.length === 0) addRow();
+
+        // In Words logic
+        function rupeesInWords(num) {
+            if (isNaN(num) || num <= 0) return "";
+            const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            if ((num = num.toString()).length > 9) return 'overflow';
+            let n = ('000000000' + num).substr(-9).match(/.{1,2}/g);
+            let str = '';
+            str += (n[0] != 0) ? (a[Number(n[0])] || b[n[0][0]] + ' ' + a[n[0][1]]) + 'Crore ' : '';
+            str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Lakh ' : '';
+            str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Thousand ' : '';
+            str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Hundred ' : '';
+            str += (n[4] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) : '';
+            return `Rupees ${str.trim()} only`;
         }
-        function addRow() {
-            const tr = document.createElement('tr');
+        // Add item row logic with focus
+        function addRow(focusDesc = true) {
+            let rowCount = billBody.rows.length;
+            if (rowCount >= 25) return;
+            let tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="col-item"><input type="text" placeholder="Item name" oninput="recalc()" /></td>
-                <td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()" /></td>
-                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
-                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()" /></td>
-                <td class="rowTotal">₹0.00</td>
-                <td class="col-actions"><button class="btn-mini" onclick="removeRow(this)">Remove</button></td>
-            `;
-            itemsBody.appendChild(tr);
+        <td>${rowCount + 1}</td>
+        <td class="col-desc"><input type="text" autocomplete="off"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="1" min="0"></td>
+        <td><input type="number" step="0.01" value="0" min="0" max="100"></td>
+        <td><input type="number" step="0.01"></td>
+        <td class="calcAmt">₹0.00</td>
+        <td><button class="btn-mini" onclick="removeRow(this)">🗑</button></td>
+    `;
+            billBody.appendChild(tr);
+            attachRowEvents(tr);
+            recalcBill();
+            if (focusDesc !== false) setTimeout(() => tr.cells[1].querySelector('input').focus(), 10);
         }
+        // Remove row logic
         function removeRow(btn) {
             btn.closest('tr').remove();
-            recalc();
+            renumberRows();
+            recalcBill();
         }
-        function computeItemsSubtotal() {
-            let subtotal = 0;
-            [...itemsBody.children].forEach(tr => {
-                const qty = parseFloat(tr.children[4].querySelector('input').value) || 0;
-                const rate = parseFloat(tr.children[5].querySelector('input').value) || 0;
-                const discount = parseFloat(tr.children[6].querySelector('input').value) || 0;
-                const total = qty * rate - discount;
-                tr.querySelector('.rowTotal').textContent = (isFinite(total) ? "₹" + total.toFixed(2) : "₹0.00");
-                subtotal += total;
-            });
-            return subtotal;
+        function renumberRows() {
+            Array.from(billBody.rows).forEach((tr, i) => tr.cells[0].textContent = i + 1);
         }
-        function getActiveSubtotal() {
-            const itemsSubtotal = computeItemsSubtotal();
-            const amount = parseFloat(amountInput.value) || 0;
-            if (itemsSubtotal > 0) {
-                updateSourceNote('Using item-wise total');
-                return itemsSubtotal;
-            } else {
-                updateSourceNote('Using entered amount');
-                return amount;
+        function attachRowEvents(tr) {
+            for (let i = 1; i <= 5; i++)
+                tr.cells[i].querySelector('input').oninput = recalcBill;
+        }
+        function initializeRows() {
+            for (let i = 0; i < 6; i++) addRow(false);
+        }
+        initializeRows();
+        Array.from(billBody.rows).forEach(attachRowEvents);
+
+        function recalcBill() {
+            let total = 0;
+            for (let tr of billBody.rows) {
+                let mrp = parseFloat(tr.cells[2].querySelector('input').value) || 0;
+                let qty = parseFloat(tr.cells[3].querySelector('input').value) || 0;
+                let discountPct = parseFloat(tr.cells[4].querySelector('input').value) || 0;
+                let rate = parseFloat(tr.cells[5].querySelector('input').value) || 0;
+                let effective = 0;
+                if ((!rate || rate == 0) && discountPct > 0) {
+                    let discount = Math.round(mrp - (mrp * discountPct / 100));
+                    effective = discount * qty;
+                } else if (!rate || rate == 0) {
+                    effective = mrp * qty;
+                } else {
+                    effective = rate * qty;
+                }
+                tr.querySelector('.calcAmt').textContent = `₹${effective.toFixed(2)}`;
+                total += effective;
             }
+            sumTotal.textContent = `₹${total.toFixed(2)}`;
+            let extraPercent = parseFloat(extraDiscountInput.value) || 0;
+            let extraDiscount = total * (extraPercent / 100);
+            sumExtraDiscount.textContent = `- ₹${extraDiscount.toFixed(2)}`;
+            let discountBase = total - extraDiscount;
+            let discount = discountBase * DISCOUNT_FRACTION;
+            sumDiscount.textContent = `- ₹${discount.toFixed(2)}`;
+            let taxable = discountBase - discount;
+            let cgst = taxable * 0.06;
+            let sgst = taxable * 0.06;
+            sumCGST.textContent = `₹${cgst.toFixed(2)}`;
+            sumSGST.textContent = `₹${sgst.toFixed(2)}`;
+            let grand = taxable + cgst + sgst;
+            sumGrand.textContent = `₹${grand.toFixed(2)}`;
+            inWords.textContent = rupeesInWords(Math.round(grand));
         }
-        function updateSourceNote(msg) {
-            document.getElementById('sourceNote').textContent = msg;
-        }
-        function recalc() {
-            let subtotal = getActiveSubtotal();
-            const extraPercent = parseFloat(document.getElementById('extraDiscountPercent').value) || 0;
-            const extraDiscount = subtotal * (extraPercent / 100);
-            const discountBase = subtotal - extraDiscount;
-            const discount = discountBase * DISCOUNT_FRACTION;
-            const taxable = discountBase - discount;
-            const sgst = taxable * 0.06;
-            const cgst = taxable * 0.06;
-            const grand = taxable + sgst + cgst;
-            document.getElementById('sum-amount').textContent = fmt(subtotal);
-            document.getElementById('sum-extra-discount').textContent = "- " + fmt(extraDiscount);
-            document.getElementById('sum-discount').textContent = "- " + fmt(discount);
-            document.getElementById('sum-sgst').textContent = fmt(sgst);
-            document.getElementById('sum-cgst').textContent = fmt(cgst);
-            document.getElementById('sum-grand').textContent = fmt(grand);
-        }
-        recalc();
+        recalcBill();
     </script>
 </body>
 
