@@ -7,7 +7,9 @@
     <title>S.B. Enterprises - Invoice</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -27,7 +29,7 @@
 
         body {
             background-color: var(--bg-dark);
-            background-image: 
+            background-image:
                 radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(34, 211, 238, 0.15) 0px, transparent 50%);
@@ -63,7 +65,7 @@
             background: rgba(30, 41, 59, 0.9);
             box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
         }
-        
+
         /* Tally-like Focus Mode for Table Inputs */
         .tally-mode input:focus {
             background-color: var(--tally-yellow);
@@ -77,13 +79,16 @@
             width: 8px;
             height: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.5);
         }
+
         ::-webkit-scrollbar-thumb {
             background: rgba(148, 163, 184, 0.3);
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(148, 163, 184, 0.5);
         }
@@ -100,10 +105,10 @@
             width: 100%;
             top: 100%;
             left: 0;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             display: none;
         }
-        
+
         .autocomplete-list.active {
             display: block;
         }
@@ -111,22 +116,23 @@
         .autocomplete-item {
             padding: 8px 12px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 0.9rem;
             color: #cbd5e1;
             display: flex;
             justify-content: space-between;
         }
 
-        .autocomplete-item:hover, .autocomplete-item.selected {
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
             background: var(--primary);
             color: #fff;
         }
-        
+
         .autocomplete-item .price-tag {
             font-size: 0.8rem;
             opacity: 0.8;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 2px 6px;
             border-radius: 4px;
         }
@@ -137,7 +143,7 @@
             border-spacing: 0;
             width: 100%;
         }
-        
+
         th {
             background: rgba(15, 23, 42, 0.8);
             color: var(--primary);
@@ -151,141 +157,297 @@
 
         td {
             border-bottom: 1px solid var(--border);
-            padding: 4px; /* Tight tally feel */
+            padding: 4px;
+            /* Tight tally feel */
         }
-        
+
         tr:last-child td {
             border-bottom: none;
         }
 
-        /* Print Styles */
+        /* --- PRINT STYLES (Professional & Compact) --- */
         @media print {
             @page {
                 size: A4;
-                margin: 10mm;
+                margin: 5mm 10mm;
+                /* Minimal margins for max space */
             }
 
             body {
                 background: white !important;
-                color: black !important;
+                color: #000 !important;
                 padding: 0 !important;
-                font-family: 'Times New Roman', serif; /* Standard Business Feel */
+                font-family: 'Times New Roman', Times, serif;
+                -webkit-print-color-adjust: exact;
+                font-size: 11pt;
             }
 
-            .no-print, .btn-add, button {
+            /* Hide UI Elements */
+            .no-print,
+            .btn-add,
+            .status-bar,
+            button,
+            ::-webkit-scrollbar {
                 display: none !important;
             }
 
-            .glass-panel {
+            /* Reset Containers */
+            .glass-panel,
+            .bill-container {
                 background: none !important;
                 box-shadow: none !important;
-                border: 1px solid #000 !important;
-                border-radius: 0 !important;
-                padding: 0 !important;
+                border: none !important;
                 backdrop-filter: none !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
             }
 
-            /* Header Compact */
+            /* Header Section */
             .invoice-header {
                 text-align: center;
-                border-bottom: 1px solid #000;
-                padding-bottom: 5px;
-                margin-bottom: 10px;
-            }
-            
-            .invoice-header h1 {
-                margin: 0;
-                font-size: 1.5rem;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                color: black !important;
-                text-shadow: none !important;
+                border-bottom: 2px solid #000;
+                padding-bottom: 8px;
+                margin-bottom: 12px;
             }
 
+            .invoice-header h1 {
+                font-size: 18pt;
+                color: #000 !important;
+                background: none !important;
+                -webkit-text-fill-color: #000 !important;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                font-weight: 800;
+                margin-bottom: 4px;
+            }
+
+            .invoice-header h2 {
+                font-size: 14pt;
+                color: #000 !important;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            .invoice-header p {
+                font-size: 10pt;
+                color: #333 !important;
+                margin: 2px 0;
+                line-height: 1.3;
+            }
+
+            .invoice-header span,
+            .text-emerald-400 {
+                color: #000 !important;
+            }
+
+            /* Party Details (Compact Grid) */
             .party-details {
                 display: flex;
+                flex-wrap: wrap;
                 justify-content: space-between;
-                border-bottom: 1px solid #000;
-                padding: 5px 0;
-                margin-bottom: 10px;
-                font-size: 12px;
-            }
-            
-            .party-details input {
-                border: none !important;
+                gap: 10px;
                 background: none !important;
-                padding: 0 !important;
-                color: black !important;
-                width: auto;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 8px;
+                margin-bottom: 12px;
+            }
+
+            .party-details>div {
+                flex: 1;
+                min-width: 45%;
+            }
+
+            .party-details .flex {
+                margin-bottom: 4px;
+                align-items: baseline;
+            }
+
+            .party-details label {
                 font-weight: bold;
+                color: #444 !important;
+                font-size: 10pt;
+                width: auto;
+                margin-right: 8px;
             }
 
-            /* Table Compact */
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                border: 1px solid #000;
-            }
-            
-            th, td {
-                border: 1px solid #000 !important;
-                padding: 2px 4px !important;
-                color: black !important;
-                font-size: 11px !important;
+            .party-details input {
                 background: none !important;
-            }
-            
-            th {
-                background: #eee !important;
-                -webkit-print-color-adjust: exact;
+                border: none !important;
+                border-bottom: 1px dotted #999 !important;
+                color: #000 !important;
+                font-weight: bold;
+                font-size: 11pt;
+                padding: 0 2px !important;
+                height: auto;
+                width: 100%;
+                font-family: inherit;
             }
 
-            input {
-                font-size: 11px !important;
-            }
-
-            /* Hide placeholder text */
+            /* Hide placeholders in print */
             input::placeholder {
                 color: transparent;
             }
 
-            /* Footer */
-            .summary-section {
-                margin-top: 10px;
-                page-break-inside: avoid;
+            /* Main Table */
+            .tally-mode {
+                margin-bottom: 0;
             }
-            
-            .summary-table td {
-                border: none !important;
-            }
-            
-            .amount-words {
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
                 border: 1px solid #000;
-                padding: 5px;
-                margin-top: 10px;
-                font-size: 12px;
-                font-style: italic;
+                margin-bottom: 10px;
+            }
+
+            th {
+                background: #e5e5e5 !important;
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                padding: 4px !important;
+                font-size: 10pt;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            td {
+                border: 1px solid #000 !important;
+                padding: 3px 5px !important;
+                font-size: 10pt;
+                color: #000 !important;
+                background: none !important;
+            }
+
+            /* Hide Empty Rows Logic */
+            tr.print-hidden {
+                display: none !important;
+            }
+
+            /* Input fields inside table for Print */
+            table input {
+                border: none !important;
+                background: none !important;
+                color: #000 !important;
+                font-size: 10pt !important;
+                padding: 0 !important;
+                width: 100%;
+                font-family: inherit;
+            }
+
+            /* Specific Column Alignments for Print */
+            td:nth-child(1) {
+                text-align: center;
+                width: 30px;
+            }
+
+            /* Sl */
+            td:nth-child(3),
+            td:nth-child(4),
+            td:nth-child(5),
+            td:nth-child(6),
+            td:nth-child(7) {
+                text-align: right;
+            }
+
+            /* Footer Section */
+            .summary-section {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                border: none !important;
+                padding-top: 5px;
+                margin-top: 0;
+            }
+
+            .amount-words {
+                border: 1px solid #000 !important;
+                background: none !important;
+                color: #000 !important;
+                padding: 8px;
+                font-size: 10pt;
+                width: 55%;
+                height: fit-content;
+            }
+
+            .amount-words span {
+                color: #000 !important;
+            }
+
+            .not-print-label {
+                font-weight: bold;
+                text-transform: uppercase;
+                border-bottom: 1px solid #eee;
+                margin-bottom: 4px;
+            }
+
+            .space-y-2 {
+                width: 40%;
+                font-size: 10pt;
+            }
+
+            .space-y-2 .flex {
+                margin-bottom: 3px;
+            }
+
+            .space-y-2 span {
+                color: #000 !important;
+            }
+
+            #valGrandTotal {
+                font-size: 14pt;
+                font-weight: bold;
+                border-top: 1px solid #000;
+                border-bottom: 1px double #000;
+                padding: 2px 0;
+            }
+
+            input[type="number"] {
+                -moz-appearance: textfield;
+            }
+
+            /* Remove spinners */
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
             }
 
             /* Signature */
             .signature-box {
-                margin-top: 40px;
-                display: flex;
-                justify-content: flex-end;
+                margin-top: 30px;
+                margin-bottom: 0;
+                width: 100%;
             }
+
             .signature-line {
-                border-top: 1px solid #000;
+                float: right;
                 width: 200px;
-                text-align: center;
+                border-top: 1px solid #000;
                 padding-top: 5px;
-                font-size: 12px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 10pt;
+            }
+
+            /* Hide the visual "Grand Total" colorful text, use simple black */
+            #valGrandTotal {
+                color: #000 !important;
+            }
+
+            #valDiscount {
+                color: #000 !important;
             }
         }
     </style>
 </head>
 
 <body>
-    
+
     <div class="max-w-5xl mx-auto glass-panel p-6 min-h-[90vh] flex flex-col relative bill-container">
         <!-- Status Bar -->
         <div id="status-bar" class="absolute top-2 right-4 text-xs font-mono text-emerald-400 opacity-80 no-print">
@@ -294,28 +456,33 @@
 
         <!-- Header -->
         <div class="invoice-header mb-6 text-center">
-            <h1 class="text-3xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-2">TAX INVOICE</h1>
+            <h1
+                class="text-3xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-2">
+                TAX INVOICE</h1>
             <h2 class="text-xl font-semibold text-slate-200">M/S. SRI BRUNDABAN ENTERPRISES</h2>
             <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">
                 Ground Floor of Hotel Rajshree Palace, Balimela Bypass Canal Road,<br>
                 Malkangiri, Odisha, PIN: 764045
             </p>
             <p class="text-xs text-slate-400 mt-1">
-                <span class="text-emerald-400 font-mono">GSTIN: 21ADKPC5405A1ZI</span> &nbsp;|&nbsp; 
+                <span class="text-emerald-400 font-mono">GSTIN: 21ADKPC5405A1ZI</span> &nbsp;|&nbsp;
                 Cell: 8249252619, 9438265976
             </p>
         </div>
 
         <!-- Party Details -->
-        <div class="party-details grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-4 bg-slate-900/30 rounded-lg border border-slate-700/50">
+        <div
+            class="party-details grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-4 bg-slate-900/30 rounded-lg border border-slate-700/50">
             <div class="space-y-3">
                 <div class="flex items-center">
                     <label class="w-24 text-sm text-slate-400">Bill To:</label>
-                    <input type="text" id="partyName" class="flex-1 rounded px-3 py-1 text-sm font-medium" placeholder="Party Name" required>
+                    <input type="text" id="partyName" class="flex-1 rounded px-3 py-1 text-sm font-medium"
+                        placeholder="Party Name" required>
                 </div>
                 <div class="flex items-center">
                     <label class="w-24 text-sm text-slate-400">Mobile:</label>
-                    <input type="text" id="partyMob" class="flex-1 rounded px-3 py-1 text-sm" placeholder="Mobile Number">
+                    <input type="text" id="partyMob" class="flex-1 rounded px-3 py-1 text-sm"
+                        placeholder="Mobile Number">
                 </div>
             </div>
             <div class="space-y-3">
@@ -338,7 +505,7 @@
                         <th class="w-12 text-center text-xs">Sl.</th>
                         <th class="min-w-[300px]">Description</th>
                         <th class="w-24 text-right">Qty</th>
-                         <th class="w-20 text-right">Unit</th>
+                        <th class="w-20 text-right">Unit</th>
                         <th class="w-24 text-right">Rate (₹)</th>
                         <th class="w-20 text-right">Disc %</th>
                         <th class="w-32 text-right">Amount (₹)</th>
@@ -349,51 +516,58 @@
                     <!-- Rows generated by JS -->
                 </tbody>
             </table>
-            <button onclick="addNewRow()" class="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-sm transition-colors border border-slate-600 no-print flex items-center gap-2">
+            <button onclick="addNewRow()"
+                class="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-sm transition-colors border border-slate-600 no-print flex items-center gap-2">
                 <span>+</span> Add Item
             </button>
         </div>
 
         <!-- Summary Section -->
-        <div class="summary-section grid grid-cols-1 md:grid-cols-2 gap-8 items-start border-t border-slate-700/50 pt-6">
+        <div
+            class="summary-section grid grid-cols-1 md:grid-cols-2 gap-8 items-start border-t border-slate-700/50 pt-6">
             <div>
-                <div class="amount-words bg-slate-900/30 p-4 rounded border border-slate-800 text-sm text-slate-400 italic">
-                    <span class="not-italic text-slate-500 font-bold block text-xs mb-1 uppercase not-print-label">Amount in Words</span>
+                <div
+                    class="amount-words bg-slate-900/30 p-4 rounded border border-slate-800 text-sm text-slate-400 italic">
+                    <span
+                        class="not-italic text-slate-500 font-bold block text-xs mb-1 uppercase not-print-label">Amount
+                        in Words</span>
                     <span id="amountInWords">Zero Rupees Only</span>
                 </div>
             </div>
-            
+
             <div class="space-y-2 text-right text-sm">
                 <div class="flex justify-between items-center">
                     <span class="text-slate-400">Sub Total:</span>
                     <span id="valSubTotal" class="font-mono text-slate-200">0.00</span>
                 </div>
-                
+
                 <div class="flex justify-between items-center text-slate-400">
-                     <span>Extra Discount (%):</span>
-                     <input type="number" id="extraDisc" class="w-16 text-right px-1 py-0.5 rounded" value="0" min="0" max="100" oninput="calculateTotal()">
+                    <span>Extra Discount (%):</span>
+                    <input type="number" id="extraDisc" class="w-16 text-right px-1 py-0.5 rounded" value="0" min="0"
+                        max="100" oninput="calculateTotal()">
                 </div>
-                
+
                 <div class="flex justify-between items-center">
                     <span class="text-slate-400">Less Discount:</span>
                     <span id="valDiscount" class="font-mono text-rose-400">-0.00</span>
                 </div>
 
-                <div class="h-px bg-slate-700 my-2"></div>
+                <div class="h-px bg-slate-700 my-2 no-print"></div>
 
                 <div class="flex justify-between items-center">
-                    <span class="text-slate-400">CGST (6%):</span>
+                    <span class="text-slate-400">CGST (2.5%):</span>
                     <span id="valCGST" class="font-mono text-slate-300">0.00</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-slate-400">SGST (6%):</span>
+                    <span class="text-slate-400">SGST (2.5%):</span>
                     <span id="valSGST" class="font-mono text-slate-300">0.00</span>
                 </div>
 
-                <div class="h-px bg-slate-700 my-2"></div>
+                <div class="h-px bg-slate-700 my-2 no-print"></div>
 
                 <div class="flex justify-between items-center text-lg font-bold">
-                    <span class="text-primary">Grand Total:</span>
+                    <span class="text-primary no-print">Grand Total:</span>
+                    <span class="hidden print:inline">Grand Total:</span>
                     <span id="valGrandTotal" class="font-mono text-emerald-400">₹0.00</span>
                 </div>
             </div>
@@ -401,15 +575,16 @@
 
         <!-- Signature for Print -->
         <div class="signature-box hidden print:flex">
-             <div class="signature-line">
-                 Authorized Signatory<br>
-                 (S.B. Enterprises)
-             </div>
+            <div class="signature-line">
+                Authorized Signatory<br>
+                (S.B. Enterprises)
+            </div>
         </div>
 
         <!-- Print Button -->
         <div class="mt-8 flex justify-end gap-4 no-print">
-            <button onclick="window.print()" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all">
+            <button onclick="handlePrint()"
+                class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all">
                 🖨️ Print Invoice
             </button>
         </div>
@@ -421,6 +596,25 @@
         let products = [];
         let rowCounter = 0;
 
+        // --- Handle Print with Empty Row Cleanup ---
+        function handlePrint() {
+            // Add 'print-hidden' to empty rows
+            const rows = document.getElementById('billBody').rows;
+            Array.from(rows).forEach(tr => {
+                const descInput = tr.querySelector('input[type="text"][id^="desc"]');
+                const val = descInput ? descInput.value.trim() : "";
+
+                // If description is empty, hide this row for print
+                if (!val) {
+                    tr.classList.add('print-hidden');
+                } else {
+                    tr.classList.remove('print-hidden');
+                }
+            });
+
+            window.print();
+        }
+
         // --- Data Fetching ---
         async function loadStockData() {
             const statusEl = document.getElementById('status-bar');
@@ -428,7 +622,7 @@
             try {
                 const response = await fetch(DATA_URL);
                 const data = await response.json();
-                
+
                 // Process and flatten data
                 products = [];
                 data.forEach(group => {
@@ -438,7 +632,7 @@
                             // Clean regex to handle "RS.330/-", "MRP 280/-", etc.
                             const priceMatch = p.productName.match(/(?:RS|MRP)[\.\s]*(\d+(\.\d+)?)/i);
                             const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
-                            
+
                             products.push({
                                 name: p.productName,
                                 price: price,
@@ -447,7 +641,7 @@
                         });
                     }
                 });
-                
+
                 statusEl.innerText = `Ready (${products.length} Items Loaded)`;
                 statusEl.classList.replace('text-emerald-400', 'text-slate-400');
             } catch (error) {
@@ -457,14 +651,14 @@
             }
         }
 
-        // --- Autocomplete Logic ---
+        // --- Autocomplete Logic (Improved Fuzzy Search) ---
         function setupAutocomplete(input, onSelect) {
             let currentFocus = -1;
             const listId = input.id + "-list";
-            
+
             // Create list container if not exists
             let list = document.getElementById(listId);
-            if(!list) {
+            if (!list) {
                 list = document.createElement("div");
                 list.setAttribute("id", listId);
                 list.setAttribute("class", "autocomplete-list shadow-xl");
@@ -472,32 +666,39 @@
                 input.parentNode.appendChild(list);
             }
 
-            input.addEventListener("input", function(e) {
+            input.addEventListener("input", function (e) {
                 const val = this.value;
                 closeAllLists();
                 if (!val) return false;
-                
+
                 currentFocus = -1;
                 list.classList.add("active");
                 list.innerHTML = '';
 
-                // Filter products (Limit to 20 for perf)
-                const matches = products.filter(p => p.name.toLowerCase().includes(val.toLowerCase())).slice(0, 20);
-                
-                if(matches.length === 0) {
-                     const item = document.createElement("div");
-                     item.className = "autocomplete-item text-slate-500 italic";
-                     item.innerHTML = "No matches found";
-                     list.appendChild(item);
-                     return;
+                // Improved Search Logic: Multi-term inclusion
+                // "tiny car" -> matches "tiny blue car"
+                const terms = val.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+
+                const matches = products.filter(p => {
+                    const nameLower = p.name.toLowerCase();
+                    // Check if ALL terms are present in the name
+                    return terms.every(term => nameLower.includes(term));
+                }).slice(0, 20);
+
+                if (matches.length === 0) {
+                    const item = document.createElement("div");
+                    item.className = "autocomplete-item text-slate-500 italic";
+                    item.innerHTML = "No matches found";
+                    list.appendChild(item);
+                    return;
                 }
 
                 matches.forEach(p => {
                     const item = document.createElement("div");
                     item.className = "autocomplete-item";
                     item.innerHTML = `<span>${p.name}</span> <span class='price-tag'>₹${p.price}</span>`;
-                    
-                    item.addEventListener("click", function() {
+
+                    item.addEventListener("click", function () {
                         input.value = p.name;
                         onSelect(p);
                         closeAllLists();
@@ -506,7 +707,7 @@
                 });
             });
 
-            input.addEventListener("keydown", function(e) {
+            input.addEventListener("keydown", function (e) {
                 let items = list.querySelectorAll(".autocomplete-item:not(.text-slate-500)");
                 if (e.key === "ArrowDown") {
                     currentFocus++;
@@ -536,7 +737,7 @@
                 if (currentFocus >= items.length) currentFocus = 0;
                 if (currentFocus < 0) currentFocus = (items.length - 1);
                 items[currentFocus].classList.add("selected");
-                items[currentFocus].scrollIntoView({block: 'nearest'});
+                items[currentFocus].scrollIntoView({ block: 'nearest' });
             }
 
             function removeActive(items) {
@@ -546,8 +747,8 @@
             }
 
             function closeAllLists(elmnt) {
-                if(elmnt !== input) {
-                   list.classList.remove("active");
+                if (elmnt !== input) {
+                    list.classList.remove("active");
                 }
             }
 
@@ -562,7 +763,7 @@
             const rowIdx = ++rowCounter;
             const tr = document.createElement('tr');
             tr.className = "hover:bg-slate-800/30 transition-colors group";
-            
+
             tr.innerHTML = `
                 <td class="text-center text-slate-500">${rowIdx}</td>
                 <td class="relative">
@@ -577,7 +778,7 @@
                    <button onclick="removeRow(this)" class="text-rose-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                 </td>
             `;
-            
+
             table.appendChild(tr);
 
             // Inputs
@@ -599,16 +800,15 @@
             const inputs = [inpDesc, inpQty, inpRate, inpDisc];
             inputs.forEach((inp, idx) => {
                 inp.addEventListener('keydown', (e) => {
-                    // Only process Enter if not handled by autocomplete selection
                     // Autocomplete handles enter if list is active.
                     const list = document.getElementById(inpDesc.id + "-list");
                     const isListActive = list && list.classList.contains("active") && list.children.length > 0;
-                    
+
                     if (e.key === 'Enter' && !isListActive) {
                         e.preventDefault();
                         if (idx < inputs.length - 1) {
                             inputs[idx + 1].focus();
-                            if(inputs[idx + 1].type === 'number') inputs[idx + 1].select();
+                            if (inputs[idx + 1].type === 'number') inputs[idx + 1].select();
                         } else {
                             // Last field (Disc) -> Calculate and New Row
                             calculateTotal();
@@ -642,16 +842,16 @@
         function calculateTotal() {
             let subTotal = 0;
             const rows = document.getElementById('billBody').rows;
-            
+
             Array.from(rows).forEach(tr => {
                 const qty = parseFloat(tr.querySelector('input[type="number"][id^="qty"]').value) || 0;
                 const rate = parseFloat(tr.querySelector('input[type="number"][id^="rate"]').value) || 0;
                 const disc = parseFloat(tr.querySelector('input[type="number"][id^="disc"]').value) || 0;
-                
+
                 const base = qty * rate;
                 const discountAmt = base * (disc / 100);
                 const final = base - discountAmt;
-                
+
                 tr.querySelector('[id^="amt"]').innerText = final.toFixed(2);
                 subTotal += final;
             });
@@ -659,31 +859,31 @@
             // Logic copied from previous app to ensure consistency
             const extraDiscPerc = parseFloat(document.getElementById('extraDisc').value) || 0;
             const extraDiscVal = subTotal * (extraDiscPerc / 100);
-            
-            const DISCOUNT_FRACTION = 12 / 112; 
+
+            const DISCOUNT_FRACTION = 12 / 112;
 
             // 1. Apply extra discount
             const afterExtra = subTotal - extraDiscVal;
-            
+
             // 2. Calculate GST Extract (12/112)
             const gstComponent = afterExtra * DISCOUNT_FRACTION;
-            
+
             // 3. Taxable Base
             const taxable = afterExtra - gstComponent;
-            
-            // 4. CGST/SGST (6% each of taxable)
-            const cgst = taxable * 0.06;
-            const sgst = taxable * 0.06;
-            
+
+            // 4. CGST/SGST (2.5% each)
+            const cgst = taxable * 0.025;
+            const sgst = taxable * 0.025;
+
             // 5. Grand Total (Should equal afterExtra theoretically, but calculated from components)
             const grandTotal = taxable + cgst + sgst;
 
             // Update UI
             document.getElementById('valSubTotal').innerText = `₹${subTotal.toFixed(2)}`;
-            
+
             // We show the "GST Extract" as "Less Discount" to match the user's previous semantic
-            document.getElementById('valDiscount').innerText = `- ₹${gstComponent.toFixed(2)}`; 
-            
+            document.getElementById('valDiscount').innerText = `- ₹${gstComponent.toFixed(2)}`;
+
             document.getElementById('valCGST').innerText = `₹${cgst.toFixed(2)}`;
             document.getElementById('valSGST').innerText = `₹${sgst.toFixed(2)}`;
             document.getElementById('valGrandTotal').innerText = `₹${grandTotal.toFixed(2)}`;
@@ -710,14 +910,15 @@
         window.addEventListener('DOMContentLoaded', () => {
             // Set default date
             document.getElementById('invDate').valueAsDate = new Date();
-            
+
             // Add initial rows
-            for(let i=0; i<6; i++) addNewRow();
-            
+            for (let i = 0; i < 6; i++) addNewRow();
+
             // Load Data
             loadStockData();
         });
 
     </script>
 </body>
+
 </html>
