@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SBE - Invoice</title>
+    <title>SBE - Quotation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -450,7 +450,7 @@
 
 <body>
 
-    <div class="max-w-5xl mx-auto glass-panel p-6 min-h-[90vh] flex flex-col relative bill-container">
+    <div class="w-full mx-auto glass-panel p-6 min-h-[90vh] flex flex-col relative bill-container">
         <!-- Status Bar -->
         <div id="status-bar" class="absolute top-2 right-4 text-xs font-mono text-emerald-400 opacity-80 no-print">
             Initializing...
@@ -460,7 +460,7 @@
         <div class="invoice-header mb-6 text-center">
             <h1
                 class="text-3xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-2">
-                TAX INVOICE</h1>
+                QUOTATION</h1>
             <h2 class="text-xl font-semibold text-slate-200">M/S. SRI BRUNDABAN ENTERPRISES</h2>
             <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">
                 Sai Mandir Road, New Colony, Beside Bank of Baroda,<br>
@@ -477,9 +477,9 @@
             class="party-details grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-4 bg-slate-900/30 rounded-lg border border-slate-700/50">
             <div class="space-y-3">
                 <div class="flex items-center">
-                    <label class="w-24 text-sm text-slate-400">Bill To:</label>
+                    <label class="w-24 text-sm text-slate-400">To:</label>
                     <input type="text" id="partyName" class="flex-1 rounded px-3 py-1 text-sm font-medium"
-                        placeholder="Party Name" required>
+                        placeholder="Customer Name" required>
                 </div>
                 <div class="flex items-center">
                     <label class="w-24 text-sm text-slate-400">Mobile:</label>
@@ -489,7 +489,7 @@
             </div>
             <div class="space-y-3">
                 <div class="flex items-center">
-                    <label class="w-24 text-sm text-slate-400">Invoice No:</label>
+                    <label class="w-24 text-sm text-slate-400">Quote No:</label>
                     <input type="text" id="invNo" class="w-32 rounded px-3 py-1 text-sm font-mono" placeholder="001">
                 </div>
                 <div class="flex items-center">
@@ -587,7 +587,7 @@
         <div class="mt-8 flex justify-end gap-4 no-print">
             <button onclick="handlePrint()"
                 class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all">
-                🖨️ Print Invoice
+                🖨️ Print Quote
             </button>
         </div>
     </div>
