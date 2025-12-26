@@ -649,7 +649,7 @@
         <div class="invoice-header mb-6 text-center">
             <h1
                 class="text-3xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-2">
-                QUOTATION</h1>
+                QUOTATION CUM GENERAL BILL</h1>
             <h2 class="text-xl font-semibold text-slate-200">M/S. SRI BRUNDABAN ENTERPRISES</h2>
             <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">
                 Sai Mandir Road, New Colony, Beside Bank of Baroda,<br>
@@ -733,13 +733,13 @@
                     <span id="valSubTotal" class="font-mono text-slate-200">0.00</span>
                 </div>
 
-                <div class="flex justify-between items-center text-slate-400">
+                <div class="flex justify-between items-center text-slate-400" id="rowExtraDisc">
                     <span>Extra Discount (%):</span>
                     <input type="number" id="extraDisc" class="w-16 text-right px-1 py-0.5 rounded" value="0" min="0"
                         max="100" oninput="calculateTotal()">
                 </div>
 
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center" id="rowLessDisc">
                     <span class="text-slate-400">Less Discount:</span>
                     <span id="valDiscount" class="font-mono text-rose-400">-0.00</span>
                 </div>
@@ -803,6 +803,19 @@
                     tr.classList.remove('print-hidden');
                 }
             });
+
+            // Hide Discount Rows if Extra Discount is 0
+            const extraDiscVal = parseFloat(document.getElementById('extraDisc').value) || 0;
+            const extraDiscRow = document.getElementById('rowExtraDisc');
+            const lessDiscRow = document.getElementById('rowLessDisc');
+
+            if (extraDiscVal === 0) {
+                extraDiscRow.classList.add('print-hidden');
+                lessDiscRow.classList.add('print-hidden');
+            } else {
+                extraDiscRow.classList.remove('print-hidden');
+                lessDiscRow.classList.remove('print-hidden');
+            }
 
             window.print();
         }
