@@ -317,14 +317,41 @@
                 font-size: 1.5rem;
             }
 
+            /* Party Details Tweaks */
             .party-details {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 4px;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 16px !important;
             }
 
             .party-details>div {
-                width: 100%;
+                width: 100% !important;
+                margin-bottom: 0 !important;
+            }
+
+            /* Stack Labels and Inputs */
+            .party-details .flex {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 4px !important;
+            }
+
+            .party-details label {
+                width: 100% !important;
+                font-size: 0.75rem !important;
+                color: var(--primary) !important;
+                margin-bottom: 0 !important;
+            }
+
+            .party-details input,
+            .party-details input#invDate,
+            /* Override specific width */
+            .party-details input#invNo {
+                /* Override specific width */
+                width: 100% !important;
+                flex: none !important;
+                padding: 8px !important;
+                background: rgba(15, 23, 42, 0.8) !important;
             }
         }
 
