@@ -179,6 +179,7 @@
                 padding: 0 !important;
                 font-family: 'Times New Roman', Times, serif;
                 -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
                 font-size: 11pt;
             }
 
@@ -408,6 +409,7 @@
 
             input[type="number"] {
                 -moz-appearance: textfield;
+                appearance: textfield;
             }
 
             /* Remove spinners */
@@ -461,12 +463,12 @@
                 TAX INVOICE</h1>
             <h2 class="text-xl font-semibold text-slate-200">M/S. SRI BRUNDABAN ENTERPRISES</h2>
             <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">
-                Ground Floor of Hotel Rajshree Palace, Balimela Bypass Canal Road,<br>
-                Malkangiri, Odisha, PIN: 764045
+                Sai Mandir Road, New Colony, Beside Bank of Baroda,<br>
+                Rayagada, Odisha, PIN: 765001
             </p>
             <p class="text-xs text-slate-400 mt-1">
                 <span class="text-emerald-400 font-mono">GSTIN: 21ADKPC5405A1ZI</span> &nbsp;|&nbsp;
-                Cell: 8249252619, 9438265976
+                Cell: 9437094667, 9348343310
             </p>
         </div>
 
@@ -799,29 +801,54 @@
             // "Tally" Navigation: Enter Key moves to next field
             const inputs = [inpDesc, inpQty, inpRate, inpDisc];
             inputs.forEach((inp, idx) => {
-                inp.addEventListener('keydown', (e) => {
-                    // Autocomplete handles enter if list is active.
-                    const list = document.getElementById(inpDesc.id + "-list");
-                    const isListActive = list && list.classList.contains("active") && list.children.length > 0;
+                const handleNav = (e) => {
+                    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
+                        // For Autocomplete: if enter is pressed and list is active, don't move
+                        if (inp === inpDesc) {
+                            const list = document.getElementById(inpDesc.id + "-list");
+                            const isListActive = list && list.classList.contains("active") && list.children.length > 0;
+                            if (isListActive && e.key === 'Enter') return;
+                        }
 
-                    if (e.key === 'Enter' && !isListActive) {
-                        e.preventDefault();
                         if (idx < inputs.length - 1) {
-                            inputs[idx + 1].focus();
-                            if (inputs[idx + 1].type === 'number') inputs[idx + 1].select();
+                            // If tab, let default behavior handle it unless we want to force focus
+                            // For Enter we MUST prevent default and move manually
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                inputs[idx + 1].focus();
+                                if (inputs[idx + 1].type === 'number') inputs[idx + 1].select();
+                            }
                         } else {
                             // Last field (Disc) -> Calculate and New Row
-                            calculateTotal();
-                            addNewRow();
-                            // Focus new row description
-                            setTimeout(() => {
-                                const rows = document.getElementById('billBody').rows;
-                                const lastRow = rows[rows.length - 1];
-                                lastRow.querySelector('input[type="text"]').focus();
-                            }, 50);
+                            // If it's the LAST row, add new row.
+                            // If it's not the last row, just move to next row's first input?
+                            // Tally behavior: Enter at end of row -> End of that row -> Start of Next Row
+
+                            // Check if this is the last row in table
+                            const rows = document.getElementById('billBody').rows;
+                            const isLastRow = (rows[rows.length - 1] === tr);
+
+                            if (isLastRow) {
+                                if (e.key === 'Enter' || e.key === 'Tab') {
+                                    // if Tab on last element, default behavior is to leave table. 
+                                    // User wants to add new row.
+                                    e.preventDefault();
+                                    calculateTotal();
+                                    addNewRow();
+                                    // Focus new row, handled by timeout in logic
+                                    setTimeout(() => {
+                                        const newRows = document.getElementById('billBody').rows;
+                                        const lastRow = newRows[newRows.length - 1];
+                                        lastRow.querySelector('input[type="text"]').focus();
+                                    }, 50);
+                                }
+                            }
                         }
                     }
-                });
+                };
+
+                inp.addEventListener('keydown', handleNav);
+
                 // Recalc on input
                 inp.addEventListener('input', calculateTotal);
             });
@@ -912,7 +939,7 @@
             document.getElementById('invDate').valueAsDate = new Date();
 
             // Add initial rows
-            for (let i = 0; i < 6; i++) addNewRow();
+            for (let i = 0; i < 1; i++) addNewRow();
 
             // Load Data
             loadStockData();
