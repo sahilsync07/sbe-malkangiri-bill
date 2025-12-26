@@ -137,6 +137,15 @@
             border-radius: 4px;
         }
 
+        .qty-tag {
+            font-size: 0.8rem;
+            background: #facc15;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
         /* Table Styling */
         table {
             border-collapse: separate;
@@ -631,14 +640,14 @@
                 data.forEach(group => {
                     if (group.products) {
                         group.products.forEach(p => {
-                            // Parse Price from Name (looking for RS. or MRP followed by number)
-                            // Clean regex to handle "RS.330/-", "MRP 280/-", etc.
-                            const priceMatch = p.productName.match(/(?:RS|MRP)[\.\s]*(\d+(\.\d+)?)/i);
+                            // Parse Price from Name (looking for RS, MRP, or @ followed by number)
+                            const priceMatch = p.productName.match(/(?:RS|MRP|@)[\.\s]*(\d+(\.\d+)?)/i);
                             const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
 
                             products.push({
                                 name: p.productName,
                                 price: price,
+                                qty: p.quantity || p.qty || 0,
                                 category: group.groupName
                             });
                         });
@@ -699,7 +708,8 @@
                 matches.forEach(p => {
                     const item = document.createElement("div");
                     item.className = "autocomplete-item";
-                    item.innerHTML = `<span>${p.name}</span> <span class='price-tag'>₹${p.price}</span>`;
+                    const qtyTag = p.qty > 0 ? `<span class='qty-tag'>${p.qty} Pcs</span>` : '';
+                    item.innerHTML = `<span>${p.name}</span> <div class="flex gap-2">${qtyTag} <span class='price-tag'>₹${p.price}</span></div>`;
 
                     item.addEventListener("click", function () {
                         input.value = p.name;
