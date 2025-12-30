@@ -608,6 +608,22 @@
                 color: #000 !important;
             }
 
+            .summary-section {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 20px !important;
+                width: 100% !important;
+            }
+
+            .summary-left {
+                width: 100% !important;
+            }
+
+            .space-y-2 {
+                width: 100% !important;
+                margin-top: 0 !important;
+            }
+
             .not-print-label {
                 font-weight: bold;
                 text-transform: uppercase;
@@ -757,7 +773,7 @@
         <!-- Summary Section -->
         <div
             class="summary-section grid grid-cols-1 md:grid-cols-2 gap-8 items-start border-t border-slate-700/50 pt-6">
-            <div>
+            <div class="summary-left">
                 <div
                     class="amount-words bg-slate-900/30 p-4 rounded border border-slate-800 text-sm text-slate-400 italic">
                     <span
@@ -805,6 +821,11 @@
                 <div class="flex justify-between items-center">
                     <span class="text-slate-400">SGST (2.5%):</span>
                     <span id="valSGST" class="font-mono text-slate-300">0.00</span>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-400">Round Off:</span>
+                    <span id="valRoundOff" class="font-mono text-slate-300">0.00</span>
                 </div>
 
                 <div class="h-px bg-slate-700 my-2 no-print"></div>
@@ -1159,7 +1180,12 @@
             const sgst = taxable * 0.025;
 
             // 5. Grand Total (Should equal afterExtra theoretically, but calculated from components)
-            const grandTotal = taxable + cgst + sgst;
+            let grandTotal = taxable + cgst + sgst;
+
+            // 6. Round Off
+            const roundedTotal = Math.round(grandTotal);
+            const roundOffDiff = roundedTotal - grandTotal;
+            grandTotal = roundedTotal;
 
             // Update UI
             document.getElementById('valSubTotal').innerText = `₹${subTotal.toFixed(2)}`;
@@ -1169,24 +1195,65 @@
 
             document.getElementById('valCGST').innerText = `₹${cgst.toFixed(2)}`;
             document.getElementById('valSGST').innerText = `₹${sgst.toFixed(2)}`;
+            document.getElementById('valRoundOff').innerText = `₹${roundOffDiff.toFixed(2)}`;
             document.getElementById('valGrandTotal').innerText = `₹${grandTotal.toFixed(2)}`;
-            document.getElementById('amountInWords').innerText = rupeesInWords(Math.round(grandTotal));
+            document.getElementById('amountInWords').innerText = rupeesInWords(grandTotal);
         }
 
-        // --- Number to Words ---
-        function rupeesInWords(num) {
-            if (isNaN(num) || num <= 0) return "Zero Rupees Only";
-            const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-            const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-            if ((num = num.toString()).length > 9) return 'overflow';
-            let n = ('000000000' + num).substr(-9).match(/.{1,2}/g);
-            let str = '';
-            str += (n[0] != 0) ? (a[Number(n[0])] || b[n[0][0]] + ' ' + a[n[0][1]]) + ' Crore ' : '';
-            str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + ' Lakh ' : '';
-            str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + ' Thousand ' : '';
-            str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + ' Hundred ' : '';
-            str += (n[4] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) : '';
-            return `Rupees ${str.trim()} Only`;
+        // --- Number to Words (Indian Format) ---
+        function rupeesInWords(amount) {
+            const num = Math.round(amount);
+            if (num === 0) return "Zero Rupees Only";
+
+            const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+            const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+            const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+            function convertUnder1000(n) {
+                let s = "";
+                if (n >= 100) {
+                    s += units[Math.floor(n / 100)] + " Hundred ";
+                    n %= 100;
+                }
+                if (n >= 20) {
+                    s += tens[Math.floor(n / 10)] + " ";
+                    n %= 10;
+                }
+                if (n >= 10) {
+                    s += teens[n - 10] + " ";
+                    return s;
+                }
+                if (n > 0) {
+                    s += units[n] + " ";
+                }
+                return s;
+            }
+
+            let str = "";
+            let n = num;
+
+            // Crores
+            if (n >= 10000000) {
+                str += convertUnder1000(Math.floor(n / 10000000)) + "Crore ";
+                n %= 10000000;
+            }
+
+            // Lakhs
+            if (n >= 100000) {
+                str += convertUnder1000(Math.floor(n / 100000)) + "Lakh ";
+                n %= 100000;
+            }
+
+            // Thousands
+            if (n >= 1000) {
+                str += convertUnder1000(Math.floor(n / 1000)) + "Thousand ";
+                n %= 1000;
+            }
+
+            // Hundreds and units
+            str += convertUnder1000(n);
+
+            return (str.trim() + " Rupees Only");
         }
 
         // --- Initialization ---
