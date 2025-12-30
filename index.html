@@ -541,6 +541,7 @@
             }
 
             /* Hide Empty Rows Logic */
+            .print-hidden,
             tr.print-hidden {
                 display: none !important;
             }
@@ -592,6 +593,18 @@
             }
 
             .amount-words span {
+                color: #000 !important;
+            }
+
+            .bank-details {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+                margin-top: 10px;
+                padding: 8px;
+            }
+
+            .bank-details p,
+            .bank-details span {
                 color: #000 !important;
             }
 
@@ -751,6 +764,18 @@
                         class="not-italic text-slate-500 font-bold block text-xs mb-1 uppercase not-print-label">Amount
                         in Words</span>
                     <span id="amountInWords">Zero Rupees Only</span>
+                </div>
+
+                <!-- Bank Details -->
+                <div
+                    class="bank-details mt-4 border border-slate-700/50 p-4 rounded text-sm text-slate-400 bg-slate-900/30">
+                    <p class="font-bold text-slate-300 mb-1 uppercase text-xs tracking-wider">Bank Details</p>
+                    <p class="font-semibold text-emerald-400 mb-1">M/S Sri Brundabana Enterprises</p>
+                    <div class="space-y-0.5 font-mono text-xs">
+                        <p>SB Account no: <span class="text-slate-200">36878162058</span></p>
+                        <p>IFSC code: <span class="text-slate-200">SBIN0003068</span></p>
+                        <p class="text-slate-400">SBI ADB RAYAGADA BRANCH</p>
+                    </div>
                 </div>
             </div>
 
