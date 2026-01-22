@@ -859,7 +859,7 @@
 
     <script>
         // Configuration
-        const DATA_URL = 'https://raw.githubusercontent.com/sahilsync07/sbe/main/frontend/src/assets/stock-data.json';
+        const DATA_URL = 'https://raw.githubusercontent.com/sahilsync07/sbe/refs/heads/main/frontend/public/assets/stock-data.json';
         let products = [];
         let rowCounter = 0;
 
@@ -905,7 +905,23 @@
 
                 // Process and flatten data
                 products = [];
+                let lastSyncTime = null;
+
                 data.forEach(group => {
+                    // Check for metadata
+                    if (group.groupName === '_META_DATA_') {
+                        if (group.lastSync) {
+                            const date = new Date(group.lastSync);
+                            lastSyncTime = date.toLocaleString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        }
+                        return; // Skip adding to products
+                    }
+
                     if (group.products) {
                         group.products.forEach(p => {
                             // Parse Price from Name (looking for RS, MRP, or @ followed by number)
@@ -922,7 +938,8 @@
                     }
                 });
 
-                statusEl.innerText = `Ready (${products.length} Items Loaded)`;
+                const syncText = lastSyncTime ? ` | data: ${lastSyncTime}` : '';
+                statusEl.innerText = `Ready (${products.length} Items)${syncText}`;
                 statusEl.classList.replace('text-emerald-400', 'text-slate-400');
             } catch (error) {
                 console.error("Fetch error", error);
