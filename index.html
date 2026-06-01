@@ -3,184 +3,859 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="theme-color" content="#f3f4f6" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>SBE - Quotation</title>
+    <meta name="description" content="Quotation and General Bill generator for M/S Sri Brundaban Enterprises, Rayagada, Odisha." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* ============================================================
+           DESIGN SYSTEM — Minimalist Monochromatic Tech
+           ============================================================ */
+
         :root {
-            --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --primary: #38bdf8;
-            --primary-glow: rgba(56, 189, 248, 0.5);
-            --accent: #818cf8;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: rgba(148, 163, 184, 0.2);
-            --input-bg: rgba(15, 23, 42, 0.6);
-            --focus-ring: #22d3ee;
+            /* Surfaces */
+            --canvas-bg:      #f3f4f6;
+            --card-bg:        #ffffff;
+            --hover-bg:       #f3f4f6;
+
+            /* Borders & Accents */
+            --border-color:   #000000;
+            --border-light:   #e5e7eb;
+
+            /* Text */
+            --text-primary:   #000000;
+            --text-secondary: #4b5563;
+            --text-disabled:  #9ca3af;
+
+            /* Shadows */
+            --shadow:         0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-hover:   0 8px 16px -4px rgba(0, 0, 0, 0.1);
+
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', "SF Mono", Courier, monospace;
+
+            /* Spacing */
+            --sp-xs: 0.25rem;
+            --sp-sm: 0.5rem;
+            --sp-md: 1rem;
+            --sp-lg: 1.5rem;
+            --sp-xl: 2rem;
+            --sp-2xl: 3rem;
+
+            /* Tally Focus */
             --tally-yellow: #fff9c4;
-            --tally-text: #000;
+            --tally-text:   #000;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Prevent Android tap highlight */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Remove number input spinners globally */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(34, 211, 238, 0.15) 0px, transparent 50%);
-            background-attachment: fixed;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            background-color: var(--canvas-bg);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
             min-height: 100vh;
+            min-height: 100dvh; /* dynamic viewport height for mobile */
             overflow-x: hidden;
             padding: 20px;
+            padding: 20px env(safe-area-inset-right, 20px) 20px env(safe-area-inset-left, 20px);
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
-        /* Glassmorphism Card */
-        .glass-panel {
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        h1, h2, h3 {
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
         }
 
-        input {
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
+        /* ============================================================
+           BILL CONTAINER — Card with stacked-paper depth
+           ============================================================ */
+
+        .bill-container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            padding: var(--sp-lg) var(--sp-xl);
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
-        input:focus {
+        .bill-container::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: -6px;
+            bottom: -6px;
+            border: 2px solid var(--border-color);
+            background: var(--card-bg);
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        /* ============================================================
+           STATUS BAR
+           ============================================================ */
+
+        #status-bar {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+           INVOICE HEADER
+           ============================================================ */
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: var(--sp-lg);
+            padding-bottom: var(--sp-md);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .invoice-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            color: var(--text-primary);
+            margin-bottom: var(--sp-xs);
+        }
+
+        .invoice-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--sp-xs);
+        }
+
+        .invoice-header p {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+            margin-top: 0.15rem;
+            line-height: 1.5;
+        }
+
+        .invoice-header .gstin-line {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============================================================
+           PARTY DETAILS
+           ============================================================ */
+
+        .party-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--sp-lg);
+            margin-bottom: var(--sp-xl);
+            padding: var(--sp-md);
+            background-color: var(--canvas-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+        }
+
+        .party-details .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-sm);
+        }
+
+        .party-details .field-row {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+        }
+
+        .party-details label {
+            width: 5rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .party-details input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ============================================================
+           INPUTS (Global)
+           ============================================================ */
+
+        input, select {
+            font-family: var(--font-mono);
+            font-size: 16px; /* >= 16px prevents auto-zoom on iOS/Android */
+            padding: 6px 8px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
             outline: none;
-            border-color: var(--focus-ring);
-            background: rgba(30, 41, 59, 0.9);
-            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+            transition: box-shadow 0.2s ease;
+            /* Minimum 44px touch target for accessibility */
+            min-height: 44px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, select:focus {
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
+        }
+
+        input::placeholder {
+            color: var(--text-disabled);
+            font-weight: 400;
         }
 
         /* Tally-like Focus Mode for Table Inputs */
         .tally-mode input:focus {
             background-color: var(--tally-yellow);
             color: var(--tally-text);
-            border-color: #f59e0b;
+            border-color: var(--border-color);
             font-weight: 600;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* ============================================================
+           TABLE
+           ============================================================ */
+
+        .table-wrap {
+            flex-grow: 1;
+            overflow-x: auto;
+            margin-bottom: var(--sp-lg);
         }
 
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.3);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(148, 163, 184, 0.5);
-        }
-
-        /* Autocomplete Dropdown */
-        .autocomplete-list {
-            position: absolute;
-            z-index: 50;
-            background: #1e293b;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            width: 100%;
-            top: 100%;
-            left: 0;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-
-        .autocomplete-list.active {
-            display: block;
-        }
-
-        .autocomplete-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.9rem;
-            color: #cbd5e1;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .autocomplete-item:hover,
-        .autocomplete-item.selected {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        .autocomplete-item .price-tag {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .qty-tag {
-            font-size: 0.8rem;
-            background: #facc15;
-            color: #000;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        /* Table Styling */
         table {
-            border-collapse: separate;
-            border-spacing: 0;
             width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-sans);
         }
 
         th {
-            background: rgba(15, 23, 42, 0.8);
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 0.85rem;
-            letter-spacing: 0.05em;
+            background-color: var(--border-color);
+            color: #ffffff;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
             text-transform: uppercase;
-            padding: 12px 8px;
-            border-bottom: 2px solid var(--border);
+            letter-spacing: 0.5px;
+            padding: 0.6rem 0.75rem;
         }
 
+        th.text-center { text-align: center; }
+        th.text-right  { text-align: right; }
+        th.min-w-desc  { min-width: 300px; }
+        th.w-12        { width: 3rem; }
+        th.w-20        { width: 5rem; }
+        th.w-24        { width: 6rem; }
+        th.w-32        { width: 8rem; }
+
         td {
-            border-bottom: 1px solid var(--border);
-            padding: 4px;
-            /* Tight tally feel */
+            padding: 0.25rem;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--border-light);
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
-        /* --- MOBILE CARD LAYOUT --- */
-        @media screen and (max-width: 768px) {
-            .bill-container {
-                padding: 12px;
+        /* Hover effect on table rows */
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        /* Table cell helpers */
+        .td-center { text-align: center; }
+        .td-right  { text-align: right; }
+        .td-sl     { text-align: center; color: var(--text-secondary); }
+        .td-amount {
+            text-align: right;
+            padding: 0.5rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Table inputs — borderless inline style */
+        table input {
+            border: none;
+            background: transparent;
+            padding: 0.5rem;
+            width: 100%;
+            font-size: 16px; /* Prevent mobile zoom */
+            border-radius: 2px;
+            min-height: 40px; /* Touch-friendly */
+        }
+
+        table input:focus {
+            background-color: var(--tally-yellow);
+            box-shadow: none;
+        }
+
+        table input[type="number"] {
+            text-align: right;
+            font-family: var(--font-mono);
+        }
+
+        table input[type="text"] {
+            font-family: var(--font-sans);
+        }
+
+        /* Relative positioning for autocomplete */
+        .td-relative {
+            position: relative;
+        }
+
+        /* Remove button */
+        .btn-remove {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: var(--text-disabled);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s ease, color 0.15s ease;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            line-height: 1;
+            min-width: 44px;  /* Touch target */
+            min-height: 44px; /* Touch target */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        tbody tr:hover .btn-remove {
+            opacity: 1;
+        }
+
+        .btn-remove:hover {
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+
+        .btn-primary {
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            min-height: 48px; /* Touch-friendly */
+            background-color: var(--border-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+            -webkit-appearance: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.85;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-secondary {
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            min-height: 48px; /* Touch-friendly */
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+            -webkit-appearance: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--canvas-bg);
+            transform: translate(-1px, -1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.97);
+        }
+
+        /* Add Item button */
+        .btn-add {
+            margin-top: var(--sp-md);
+        }
+
+        /* Print button container */
+        .btn-container {
+            margin-top: var(--sp-xl);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--sp-md);
+        }
+
+        /* ============================================================
+           SUMMARY SECTION
+           ============================================================ */
+
+        .summary-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--sp-xl);
+            align-items: start;
+            border-top: 2px solid var(--border-color);
+            padding-top: var(--sp-lg);
+        }
+
+        .summary-left {
+            width: 100%;
+        }
+
+        /* Amount in Words callout */
+        .amount-words {
+            border: 1px dashed var(--border-color);
+            padding: var(--sp-md);
+            background-color: var(--canvas-bg);
+            font-family: var(--font-mono);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .amount-words .not-print-label {
+            font-style: normal;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: var(--sp-xs);
+        }
+
+        .amount-words #amountInWords {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* Bank Details */
+        .bank-details {
+            margin-top: var(--sp-md);
+            border: 2px solid var(--border-color);
+            padding: var(--sp-md);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            background-color: var(--card-bg);
+        }
+
+        .bank-details .bank-title {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: var(--sp-xs);
+            color: var(--text-primary);
+        }
+
+        .bank-details .bank-name {
+            font-weight: 600;
+            margin-bottom: var(--sp-xs);
+            color: var(--text-primary);
+        }
+
+        .bank-details .bank-info {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .bank-details .bank-info span {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .bank-details .bank-info p {
+            margin-bottom: 2px;
+        }
+
+        /* Summary right — totals */
+        .summary-right {
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--sp-xs);
+        }
+
+        .summary-row .label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .summary-row .value {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .summary-row .value-discount {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .summary-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: var(--sp-sm) 0;
+        }
+
+        .summary-row-grand {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .summary-row-grand .label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .summary-row-grand .value {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.15rem;
+        }
+
+        /* Extra discount input in summary */
+        .extra-disc-input {
+            width: 4rem;
+            text-align: right;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Signature box */
+        .signature-box {
+            display: none;
+        }
+
+        .signature-line {
+            float: right;
+            width: 200px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 5px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* ============================================================
+           AUTOCOMPLETE DROPDOWN
+           ============================================================ */
+
+        .autocomplete-list {
+            position: absolute;
+            z-index: 50;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
+            overscroll-behavior: contain; /* Prevent scroll chaining */
+            width: 100%;
+            top: 100%;
+            left: 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: none;
+        }
+
+        .autocomplete-list.active {
+            display: block;
+            animation: fadeSlideIn 0.15s ease;
+        }
+
+        .autocomplete-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.15s ease;
+            min-height: 48px; /* Touch-friendly row height */
+            gap: 8px;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: var(--border-color);
+            color: #ffffff;
+        }
+
+        .autocomplete-item .price-tag {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--canvas-bg);
+            color: var(--text-primary);
+            padding: 2px 8px;
+            border-radius: 2px;
+            border: 1px solid var(--border-color);
+            text-transform: uppercase;
+        }
+
+        .autocomplete-item:hover .price-tag,
+        .autocomplete-item.selected .price-tag {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .qty-tag {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--canvas-bg);
+            color: var(--text-primary);
+            padding: 2px 8px;
+            border-radius: 2px;
+            border: 1px solid var(--border-color);
+        }
+
+        .autocomplete-item:hover .qty-tag,
+        .autocomplete-item.selected .qty-tag {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .autocomplete-item.no-match {
+            color: var(--text-disabled);
+            font-style: italic;
+            cursor: default;
+        }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--canvas-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-disabled);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* ============================================================
+           ANIMATIONS
+           ============================================================ */
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           NO PRINT
+           ============================================================ */
+
+        /* (Handled in @media print below) */
+
+        /* ============================================================
+           RESPONSIVE — 768px
+           ============================================================ */
+
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+                padding-bottom: calc(80px + env(safe-area-inset-bottom, 8px)); /* Space for sticky bottom bar */
             }
 
-            /* Hide headers */
+            .bill-container {
+                padding: 12px;
+                border-width: 1px;
+                min-height: auto;
+            }
+
+            .bill-container::before {
+                display: none;
+            }
+
+            /* Header tweaks */
+            .invoice-header {
+                margin-bottom: var(--sp-md);
+                padding-bottom: var(--sp-sm);
+            }
+
+            .invoice-header h1 {
+                font-size: 1.1rem;
+                letter-spacing: -0.5px;
+                line-height: 1.3;
+            }
+
+            .invoice-header h2 {
+                font-size: 0.95rem;
+            }
+
+            .invoice-header p {
+                font-size: 0.65rem;
+            }
+
+            .invoice-header .gstin-line {
+                font-size: 0.6rem;
+            }
+
+            /* Status bar on mobile */
+            #status-bar {
+                position: relative;
+                top: 0;
+                right: 0;
+                text-align: center;
+                margin-bottom: var(--sp-sm);
+                font-size: 0.6rem;
+                padding: 4px 8px;
+                background: var(--canvas-bg);
+                border: 1px solid var(--border-light);
+                border-radius: 2px;
+            }
+
+            /* Party Details stacked */
+            .party-details {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-sm);
+                padding: var(--sp-sm);
+                margin-bottom: var(--sp-md);
+            }
+
+            .party-details .field-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+
+            .party-details label {
+                width: 100%;
+                font-size: 0.6rem;
+                color: var(--text-primary);
+            }
+
+            .party-details input,
+            .party-details input#invDate,
+            .party-details input#invNo {
+                width: 100% !important;
+                padding: 10px 8px;
+                font-size: 16px; /* Prevent zoom */
+                min-height: 44px;
+            }
+
+            /* ---- MOBILE CARD LAYOUT FOR TABLE ---- */
+
             #billTable thead {
                 display: none;
             }
@@ -191,21 +866,19 @@
                 width: 100%;
             }
 
-            /* Card Style for Rows */
             #billTable tr {
                 display: grid;
                 grid-template-columns: 1fr 1fr 1fr;
-                gap: 8px 12px;
-                background: rgba(30, 41, 59, 0.6);
-                border: 1px solid var(--border);
-                padding: 16px;
-                border-radius: 12px;
-                margin-bottom: 16px;
+                gap: 6px 10px;
+                background: var(--card-bg);
+                border: 2px solid var(--border-color);
+                padding: 14px 12px;
+                border-radius: 4px;
+                margin-bottom: 12px;
                 position: relative;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                box-shadow: var(--shadow);
             }
 
-            /* Cells Reset */
             #billTable td {
                 display: flex;
                 flex-direction: column;
@@ -213,62 +886,69 @@
                 padding: 0;
             }
 
-            /* Labels */
             #billTable td::before {
                 content: attr(data-label);
-                font-size: 0.65rem;
+                font-family: var(--font-mono);
+                font-size: 0.55rem;
                 text-transform: uppercase;
-                color: var(--text-muted);
+                color: var(--text-secondary);
                 margin-bottom: 2px;
-                font-weight: 600;
+                font-weight: 700;
                 letter-spacing: 0.5px;
             }
-
-            /* Specific Cell Positioning */
 
             /* Sl No: Top Left absolute */
             #billTable td:nth-child(1) {
                 position: absolute;
                 top: 8px;
                 left: 10px;
-                font-size: 0.7rem;
-                color: var(--text-muted);
+                font-size: 0.65rem;
+                color: var(--text-disabled);
                 width: auto;
                 height: auto;
+            }
+
+            #billTable td:nth-child(1)::before {
+                display: none;
             }
 
             /* Description: Full Width at top */
             #billTable td:nth-child(2) {
                 grid-column: 1 / -1;
-                margin-top: 12px;
-                /* Space for SL No */
-                margin-bottom: 8px;
+                margin-top: 10px;
+                margin-bottom: 6px;
             }
 
             #billTable td:nth-child(2)::before {
                 display: none;
             }
 
-            /* Hide "Description" label if obvious */
-
-            /* Qty */
-            #billTable td:nth-child(3) {
-                grid-column: span 1;
+            /* Description input full-width */
+            #billTable td:nth-child(2) input {
+                font-size: 16px;
+                padding: 10px 8px;
+                border: 1px solid var(--border-color) !important;
+                border-radius: 4px;
+                background: var(--card-bg) !important;
             }
 
-            /* Unit */
-            #billTable td:nth-child(4) {
-                grid-column: span 1;
-            }
+            #billTable td:nth-child(3) { grid-column: span 1; }
+            #billTable td:nth-child(4) { grid-column: span 1; }
+            #billTable td:nth-child(5) { grid-column: span 1; }
+            #billTable td:nth-child(6) { grid-column: span 1; }
 
-            /* Rate */
-            #billTable td:nth-child(5) {
-                grid-column: span 1;
-            }
-
-            /* Disc */
-            #billTable td:nth-child(6) {
-                grid-column: span 1;
+            /* Numeric inputs on mobile */
+            #billTable td:nth-child(3) input,
+            #billTable td:nth-child(4) input,
+            #billTable td:nth-child(5) input,
+            #billTable td:nth-child(6) input {
+                font-size: 16px;
+                padding: 8px 6px;
+                border: 1px solid var(--border-light) !important;
+                border-radius: 4px;
+                background: var(--card-bg) !important;
+                text-align: center;
+                min-height: 44px;
             }
 
             /* Amount: Bigger and spread */
@@ -277,9 +957,10 @@
                 text-align: right;
                 align-items: flex-end;
                 justify-content: center;
-                font-size: 1.1rem;
-                font-weight: bold;
-                color: var(--focus-ring);
+                font-size: 1.15rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                padding-top: 4px;
             }
 
             #billTable td:nth-child(7)::before {
@@ -290,77 +971,193 @@
             /* Remove Button: Top Right absolute */
             #billTable td:nth-child(8) {
                 position: absolute;
-                top: 6px;
-                right: 6px;
+                top: 4px;
+                right: 4px;
                 width: auto;
                 display: block;
             }
 
-            #billTable td:nth-child(8) button {
+            #billTable td:nth-child(8)::before {
+                display: none;
+            }
+
+            #billTable td:nth-child(8) .btn-remove {
                 opacity: 1 !important;
-                background: rgba(225, 29, 72, 0.15);
-                color: #fb7185;
-                padding: 4px 10px;
-                border-radius: 6px;
+                background: var(--canvas-bg);
+                color: var(--text-primary);
+                padding: 6px 12px;
+                border-radius: 4px;
                 font-size: 1.2rem;
                 line-height: 1;
+                border: 1px solid var(--border-color);
+                min-width: 44px;
+                min-height: 44px;
             }
 
-            /* Input tweaks for mobile */
-            input {
-                background: rgba(15, 23, 42, 0.4);
-                border-color: rgba(148, 163, 184, 0.1);
+            /* General mobile input tweaks inside table */
+            table input {
+                border: 1px solid var(--border-light);
+                background: var(--card-bg);
+                min-height: 44px;
             }
 
-            /* Header tweaks */
-            .invoice-header h1 {
-                font-size: 1.5rem;
+            /* Autocomplete on mobile — wider touch targets, scroll fix */
+            .autocomplete-list {
+                max-height: 220px; /* Smaller on mobile */
+                border-width: 1px;
+                border-radius: 4px;
+                position: fixed;
+                left: 8px;
+                right: 8px;
+                width: auto;
+                top: auto;
+                bottom: 0;
+                z-index: 1000;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
             }
 
-            /* Party Details Tweaks */
-            .party-details {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 16px !important;
+            .autocomplete-item {
+                padding: 14px 12px;
+                font-size: 0.85rem;
+                min-height: 52px;
             }
 
-            .party-details>div {
-                width: 100% !important;
-                margin-bottom: 0 !important;
+            .autocomplete-item span {
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
-            /* Stack Labels and Inputs */
-            .party-details .flex {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                gap: 4px !important;
+            /* Summary stacked */
+            .summary-section {
+                grid-template-columns: 1fr;
+                gap: var(--sp-md);
             }
 
-            .party-details label {
-                width: 100% !important;
-                font-size: 0.75rem !important;
-                color: var(--primary) !important;
-                margin-bottom: 0 !important;
+            .summary-right {
+                text-align: left;
             }
 
-            .party-details input,
-            .party-details input#invDate,
-            /* Override specific width */
-            .party-details input#invNo {
-                /* Override specific width */
-                width: 100% !important;
-                flex: none !important;
-                padding: 8px !important;
-                background: rgba(15, 23, 42, 0.8) !important;
+            .summary-row .label {
+                font-size: 0.7rem;
+            }
+
+            .summary-row-grand {
+                font-size: 1rem;
+                padding: var(--sp-sm) 0;
+                border-top: 2px solid var(--border-color);
+                margin-top: var(--sp-sm);
+            }
+
+            .extra-disc-input {
+                min-height: 40px;
+                width: 5rem;
+            }
+
+            .bank-details {
+                font-size: 0.8rem;
+            }
+
+            .bank-details .bank-info {
+                font-size: 0.7rem;
+            }
+
+            .amount-words {
+                font-size: 0.8rem;
+            }
+
+            /* Sticky bottom action bar */
+            .btn-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: 0;
+                padding: 12px 16px;
+                padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+                background: var(--card-bg);
+                border-top: 2px solid var(--border-color);
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+                justify-content: stretch;
+            }
+
+            .btn-container .btn-primary {
+                width: 100%;
+                justify-content: center;
+                font-size: 1rem;
+                padding: 14px;
+            }
+
+            /* Add item button full width */
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
             }
         }
 
-        /* --- PRINT STYLES (Professional & Compact) --- */
+        /* ============================================================
+           EXTRA SMALL PHONES — 400px
+           ============================================================ */
+
+        @media (max-width: 400px) {
+            body {
+                padding: 4px;
+                padding-bottom: calc(80px + env(safe-area-inset-bottom, 4px));
+            }
+
+            .bill-container {
+                padding: 8px;
+                border-radius: 0;
+            }
+
+            .invoice-header h1 {
+                font-size: 0.95rem;
+            }
+
+            .invoice-header h2 {
+                font-size: 0.85rem;
+            }
+
+            /* 2-column grid for item cards on tiny screens */
+            #billTable tr {
+                grid-template-columns: 1fr 1fr;
+                padding: 12px 10px;
+                gap: 6px 8px;
+            }
+
+            #billTable td:nth-child(3) { grid-column: span 1; }
+            #billTable td:nth-child(4) { grid-column: span 1; }
+            #billTable td:nth-child(5) { grid-column: span 1; }
+            #billTable td:nth-child(6) { grid-column: span 1; }
+
+            #billTable td:nth-child(7) {
+                grid-column: 1 / -1;
+                font-size: 1.1rem;
+            }
+
+            .summary-row .label {
+                font-size: 0.65rem;
+            }
+
+            .summary-row-grand .label {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ============================================================
+           PRINT STYLES
+           ============================================================ */
+
         @media print {
             @page {
                 size: A4;
                 margin: 5mm 10mm;
-                /* Minimal margins for max space */
             }
 
             body {
@@ -377,24 +1174,27 @@
             .no-print,
             .btn-add,
             .status-bar,
+            .btn-container,
             button,
             ::-webkit-scrollbar {
                 display: none !important;
             }
 
             /* Reset Containers */
-            .glass-panel,
             .bill-container {
                 background: none !important;
                 box-shadow: none !important;
                 border: none !important;
-                backdrop-filter: none !important;
                 width: 100% !important;
                 max-width: none !important;
                 min-height: 0 !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 display: block !important;
+            }
+
+            .bill-container::before {
+                display: none !important;
             }
 
             /* Header Section */
@@ -408,8 +1208,6 @@
             .invoice-header h1 {
                 font-size: 18pt;
                 color: #000 !important;
-                background: none !important;
-                -webkit-text-fill-color: #000 !important;
                 text-transform: uppercase;
                 letter-spacing: 2px;
                 font-weight: 800;
@@ -430,30 +1228,29 @@
                 line-height: 1.3;
             }
 
-            .invoice-header span,
-            .text-emerald-400 {
+            .invoice-header span {
                 color: #000 !important;
             }
 
             /* Party Details (Compact Grid) */
             .party-details {
-                display: flex;
+                display: flex !important;
                 flex-wrap: wrap;
                 justify-content: space-between;
                 gap: 10px;
                 background: none !important;
-                border: 1px solid #ccc;
+                border: 1px solid #ccc !important;
                 border-radius: 4px;
-                padding: 8px;
+                padding: 8px !important;
                 margin-bottom: 12px;
             }
 
-            .party-details>div {
+            .party-details > .field-group {
                 flex: 1;
                 min-width: 45%;
             }
 
-            .party-details .flex {
+            .party-details .field-row {
                 margin-bottom: 4px;
                 align-items: baseline;
             }
@@ -477,6 +1274,7 @@
                 height: auto;
                 width: 100%;
                 font-family: inherit;
+                box-shadow: none !important;
             }
 
             /* Hide placeholders in print */
@@ -485,7 +1283,8 @@
             }
 
             /* Main Table */
-            .tally-mode {
+            .tally-mode,
+            .table-wrap {
                 margin-bottom: 0;
             }
 
@@ -495,7 +1294,6 @@
                 border: 1px solid #000;
                 margin-bottom: 10px;
                 display: table !important;
-                /* Force Table */
             }
 
             thead {
@@ -540,7 +1338,7 @@
                 content: none !important;
             }
 
-            /* Hide Empty Rows Logic */
+            /* Hide Empty Rows */
             .print-hidden,
             tr.print-hidden {
                 display: none !important;
@@ -563,7 +1361,6 @@
                 width: 30px;
             }
 
-            /* Sl */
             td:nth-child(3),
             td:nth-child(4),
             td:nth-child(5),
@@ -574,11 +1371,12 @@
 
             /* Footer Section */
             .summary-section {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 20px !important;
+                width: 100% !important;
                 border: none !important;
-                padding-top: 5px;
+                padding-top: 5px !important;
                 margin-top: 0;
             }
 
@@ -588,11 +1386,12 @@
                 color: #000 !important;
                 padding: 8px;
                 font-size: 10pt;
-                width: 55%;
+                width: 100%;
                 height: fit-content;
             }
 
-            .amount-words span {
+            .amount-words span,
+            .amount-words .not-print-label {
                 color: #000 !important;
             }
 
@@ -604,24 +1403,22 @@
             }
 
             .bank-details p,
-            .bank-details span {
+            .bank-details span,
+            .bank-details .bank-title,
+            .bank-details .bank-name,
+            .bank-details .bank-info,
+            .bank-details .bank-info span {
                 color: #000 !important;
-            }
-
-            .summary-section {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                gap: 20px !important;
-                width: 100% !important;
             }
 
             .summary-left {
                 width: 100% !important;
             }
 
-            .space-y-2 {
+            .summary-right {
                 width: 100% !important;
                 margin-top: 0 !important;
+                font-size: 10pt;
             }
 
             .not-print-label {
@@ -631,16 +1428,16 @@
                 margin-bottom: 4px;
             }
 
-            .space-y-2 {
-                width: 40%;
-                font-size: 10pt;
-            }
-
-            .space-y-2 .flex {
+            .summary-right .summary-row {
                 margin-bottom: 3px;
             }
 
-            .space-y-2 span {
+            .summary-right span,
+            .summary-row .label,
+            .summary-row .value,
+            .summary-row .value-discount,
+            .summary-row-grand .label,
+            .summary-row-grand .value {
                 color: #000 !important;
             }
 
@@ -650,6 +1447,11 @@
                 border-top: 1px solid #000;
                 border-bottom: 1px double #000;
                 padding: 2px 0;
+                color: #000 !important;
+            }
+
+            #valDiscount {
+                color: #000 !important;
             }
 
             input[type="number"] {
@@ -657,7 +1459,6 @@
                 appearance: textfield;
             }
 
-            /* Remove spinners */
             input::-webkit-outer-spin-button,
             input::-webkit-inner-spin-button {
                 -webkit-appearance: none;
@@ -666,6 +1467,8 @@
 
             /* Signature */
             .signature-box {
+                display: flex !important;
+                justify-content: flex-end;
                 margin-top: 30px;
                 margin-bottom: 0;
                 width: 100%;
@@ -680,78 +1483,63 @@
                 font-weight: bold;
                 font-size: 10pt;
             }
-
-            /* Hide the visual "Grand Total" colorful text, use simple black */
-            #valGrandTotal {
-                color: #000 !important;
-            }
-
-            #valDiscount {
-                color: #000 !important;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="w-full mx-auto glass-panel p-6 min-h-[90vh] flex flex-col relative bill-container">
+    <div class="bill-container">
         <!-- Status Bar -->
-        <div id="status-bar" class="absolute top-2 right-4 text-xs font-mono text-emerald-400 opacity-80 no-print">
-            Initializing...
+        <div id="status-bar" class="no-print">
+            INITIALIZING...
         </div>
 
         <!-- Header -->
-        <div class="invoice-header mb-6 text-center">
-            <h1
-                class="text-3xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-2">
-                QUOTATION CUM GENERAL BILL</h1>
-            <h2 class="text-xl font-semibold text-slate-200">M/S. SRI BRUNDABAN ENTERPRISES</h2>
-            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wide">
+        <div class="invoice-header">
+            <h1>Quotation Cum General Bill</h1>
+            <h2>M/S. Sri Brundaban Enterprises</h2>
+            <p>
                 Sai Mandir Road, New Colony, Beside Bank of Baroda,<br>
                 Rayagada, Odisha, PIN: 765001
             </p>
-            <p class="text-xs text-slate-400 mt-1">
-                <span class="text-emerald-400 font-mono">GSTIN: 21ADKPC5405A1ZI</span> &nbsp;|&nbsp;
+            <p class="gstin-line">
+                GSTIN: 21ADKPC5405A1ZI &nbsp;|&nbsp;
                 Cell: 9437094667, 9348343310
             </p>
         </div>
 
         <!-- Party Details -->
-        <div
-            class="party-details grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-4 bg-slate-900/30 rounded-lg border border-slate-700/50">
-            <div class="space-y-3">
-                <div class="flex items-center">
-                    <label class="w-24 text-sm text-slate-400">To:</label>
-                    <input type="text" id="partyName" class="flex-1 rounded px-3 py-1 text-sm font-medium"
-                        placeholder="Customer Name" required>
+        <div class="party-details">
+            <div class="field-group">
+                <div class="field-row">
+                    <label>To:</label>
+                    <input type="text" id="partyName" placeholder="Customer Name" required>
                 </div>
-                <div class="flex items-center">
-                    <label class="w-24 text-sm text-slate-400">Mobile:</label>
-                    <input type="text" id="partyMob" class="flex-1 rounded px-3 py-1 text-sm"
-                        placeholder="Mobile Number">
+                <div class="field-row">
+                    <label>Mobile:</label>
+                    <input type="text" id="partyMob" placeholder="Mobile Number">
                 </div>
             </div>
-            <div class="space-y-3">
-                <div class="flex items-center">
-                    <label class="w-24 text-sm text-slate-400">Place:</label>
-                    <input type="text" id="partyPlace" class="flex-1 rounded px-3 py-1 text-sm font-medium"
-                        placeholder="Place">
+            <div class="field-group">
+                <div class="field-row">
+                    <label>Place:</label>
+                    <input type="text" id="partyPlace" placeholder="Place">
                 </div>
-                <div class="flex items-center">
-                    <label class="w-24 text-sm text-slate-400">Date:</label>
-                    <input type="date" id="invDate" class="w-40 rounded px-3 py-1 text-sm font-mono">
+                <div class="field-row">
+                    <label>Date:</label>
+                    <input type="date" id="invDate" style="width: 10rem;">
                 </div>
             </div>
         </div>
 
         <!-- Bill Table -->
-        <div class="flex-grow overflow-x-auto mb-6 tally-mode">
-            <table class="w-full text-left" id="billTable">
+        <div class="table-wrap tally-mode">
+            <table id="billTable">
                 <thead>
                     <tr>
-                        <th class="w-12 text-center text-xs">Sl.</th>
-                        <th class="min-w-[300px]">Description</th>
+                        <th class="w-12 text-center">Sl.</th>
+                        <th class="min-w-desc">Description</th>
                         <th class="w-24 text-right">Qty</th>
                         <th class="w-20 text-right">Unit</th>
                         <th class="w-24 text-right">Rate (₹)</th>
@@ -760,85 +1548,79 @@
                         <th class="w-12 text-center no-print">×</th>
                     </tr>
                 </thead>
-                <tbody id="billBody" class="text-sm">
+                <tbody id="billBody">
                     <!-- Rows generated by JS -->
                 </tbody>
             </table>
-            <button onclick="addNewRow()"
-                class="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-sm transition-colors border border-slate-600 no-print flex items-center gap-2">
+            <button onclick="addNewRow()" class="btn-secondary btn-add no-print">
                 <span>+</span> Add Item
             </button>
         </div>
 
         <!-- Summary Section -->
-        <div
-            class="summary-section grid grid-cols-1 md:grid-cols-2 gap-8 items-start border-t border-slate-700/50 pt-6">
+        <div class="summary-section">
             <div class="summary-left">
-                <div
-                    class="amount-words bg-slate-900/30 p-4 rounded border border-slate-800 text-sm text-slate-400 italic">
-                    <span
-                        class="not-italic text-slate-500 font-bold block text-xs mb-1 uppercase not-print-label">Amount
-                        in Words</span>
+                <div class="amount-words">
+                    <span class="not-print-label">Amount in Words</span>
                     <span id="amountInWords">Zero Rupees Only</span>
                 </div>
 
                 <!-- Bank Details -->
-                <div
-                    class="bank-details mt-4 border border-slate-700/50 p-4 rounded text-sm text-slate-400 bg-slate-900/30">
-                    <p class="font-bold text-slate-300 mb-1 uppercase text-xs tracking-wider">Bank Details</p>
-                    <p class="font-semibold text-emerald-400 mb-1">M/S Sri Brundabana Enterprises</p>
-                    <div class="space-y-0.5 font-mono text-xs">
-                        <p>SB Account no: <span class="text-slate-200">36878162058</span></p>
-                        <p>IFSC code: <span class="text-slate-200">SBIN0003068</span></p>
-                        <p class="text-slate-400">SBI ADB RAYAGADA BRANCH</p>
+                <div class="bank-details">
+                    <p class="bank-title">Bank Details</p>
+                    <p class="bank-name">M/S Sri Brundabana Enterprises</p>
+                    <div class="bank-info">
+                        <p>SB Account no: <span>36878162058</span></p>
+                        <p>IFSC code: <span>SBIN0003068</span></p>
+                        <p>SBI ADB RAYAGADA BRANCH</p>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-2 text-right text-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-400">Sub Total:</span>
-                    <span id="valSubTotal" class="font-mono text-slate-200">0.00</span>
+            <div class="summary-right">
+                <div class="summary-row">
+                    <span class="label">Sub Total:</span>
+                    <span id="valSubTotal" class="value">0.00</span>
                 </div>
 
-                <div class="flex justify-between items-center text-slate-400" id="rowExtraDisc">
-                    <span>Extra Discount (%):</span>
-                    <input type="number" id="extraDisc" class="w-16 text-right px-1 py-0.5 rounded" value="0" min="0"
+                <div class="summary-row" id="rowExtraDisc">
+                    <span class="label">Extra Discount (%):</span>
+                    <input type="number" id="extraDisc" class="extra-disc-input" value="0" min="0"
                         max="100" oninput="calculateTotal()">
                 </div>
 
-                <div class="flex justify-between items-center" id="rowLessDisc">
-                    <span class="text-slate-400">Less Discount:</span>
-                    <span id="valDiscount" class="font-mono text-rose-400">-0.00</span>
+                <div class="summary-row" id="rowLessDisc">
+                    <span class="label">Less Discount:</span>
+                    <span id="valDiscount" class="value-discount">-0.00</span>
                 </div>
 
-                <div class="h-px bg-slate-700 my-2 no-print"></div>
+                <div class="summary-divider no-print"></div>
 
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-400">CGST (2.5%):</span>
-                    <span id="valCGST" class="font-mono text-slate-300">0.00</span>
+                <div class="summary-row">
+                    <span class="label">CGST (2.5%):</span>
+                    <span id="valCGST" class="value">0.00</span>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-400">SGST (2.5%):</span>
-                    <span id="valSGST" class="font-mono text-slate-300">0.00</span>
-                </div>
-
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-400">Round Off:</span>
-                    <span id="valRoundOff" class="font-mono text-slate-300">0.00</span>
+                <div class="summary-row">
+                    <span class="label">SGST (2.5%):</span>
+                    <span id="valSGST" class="value">0.00</span>
                 </div>
 
-                <div class="h-px bg-slate-700 my-2 no-print"></div>
+                <div class="summary-row">
+                    <span class="label">Round Off:</span>
+                    <span id="valRoundOff" class="value">0.00</span>
+                </div>
 
-                <div class="flex justify-between items-center text-lg font-bold">
-                    <span class="text-primary no-print">Grand Total:</span>
-                    <span class="hidden print:inline">Grand Total:</span>
-                    <span id="valGrandTotal" class="font-mono text-emerald-400">₹0.00</span>
+                <div class="summary-divider no-print"></div>
+
+                <div class="summary-row-grand">
+                    <span class="label no-print">Grand Total:</span>
+                    <span class="label" style="display:none;">Grand Total:</span>
+                    <span id="valGrandTotal" class="value">₹0.00</span>
                 </div>
 
                 <!-- Signature for Print -->
-                <div class="signature-box hidden print:flex justify-end mt-12">
-                    <div class="signature-line w-40 text-center border-t border-slate-900 pt-2 font-bold text-sm">
+                <div class="signature-box">
+                    <div class="signature-line">
                         Authorized Signatory<br>
                         (SBE)
                     </div>
@@ -846,12 +1628,9 @@
             </div>
         </div>
 
-
-
         <!-- Print Button -->
-        <div class="mt-8 flex justify-end gap-4 no-print">
-            <button onclick="handlePrint()"
-                class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all">
+        <div class="btn-container no-print">
+            <button onclick="handlePrint()" class="btn-primary">
                 🖨️ Print Quote
             </button>
         </div>
@@ -898,7 +1677,7 @@
         // --- Data Fetching ---
         async function loadStockData() {
             const statusEl = document.getElementById('status-bar');
-            statusEl.innerText = "Syncing Stock Data...";
+            statusEl.innerText = "SYNCING STOCK DATA...";
             try {
                 const response = await fetch(DATA_URL);
                 const data = await response.json();
@@ -925,7 +1704,7 @@
                     if (group.products) {
                         group.products.forEach(p => {
                             // Parse Price from Name (looking for RS, MRP, or @ followed by number)
-                            const priceMatch = p.productName.match(/(?:RS|MRP|@)[\.\s]*(\d+(\.\d+)?)/i);
+                            const priceMatch = p.productName.match(/(?:RS|MRP|@)[\.\\s]*(\d+(\.\d+)?)/i);
                             const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
 
                             products.push({
@@ -938,29 +1717,66 @@
                     }
                 });
 
-                const syncText = lastSyncTime ? ` | data: ${lastSyncTime}` : '';
-                statusEl.innerText = `Ready (${products.length} Items)${syncText}`;
-                statusEl.classList.replace('text-emerald-400', 'text-slate-400');
+                const syncText = lastSyncTime ? ` · DATA: ${lastSyncTime}` : '';
+                statusEl.innerText = `READY (${products.length} ITEMS)${syncText}`;
             } catch (error) {
                 console.error("Fetch error", error);
-                statusEl.innerText = "Offline / Using Local Cache (0 items)";
-                statusEl.className = "absolute top-2 right-4 text-xs font-mono text-rose-500";
+                statusEl.innerText = "OFFLINE · 0 ITEMS";
             }
         }
 
-        // --- Autocomplete Logic (Improved Fuzzy Search) ---
+        // --- Mobile detection helper ---
+        function isMobile() {
+            return window.innerWidth <= 768 || ('ontouchstart' in window);
+        }
+
+        // --- Autocomplete backdrop (mobile) ---
+        let acBackdrop = null;
+        function getBackdrop() {
+            if (!acBackdrop) {
+                acBackdrop = document.createElement("div");
+                acBackdrop.style.cssText = "position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.3);display:none;";
+                document.body.appendChild(acBackdrop);
+            }
+            return acBackdrop;
+        }
+
+        // --- Autocomplete Logic (Improved Fuzzy Search + Mobile Touch) ---
         function setupAutocomplete(input, onSelect) {
             let currentFocus = -1;
             const listId = input.id + "-list";
 
-            // Create list container if not exists
+            // Create list container
             let list = document.getElementById(listId);
             if (!list) {
                 list = document.createElement("div");
                 list.setAttribute("id", listId);
-                list.setAttribute("class", "autocomplete-list shadow-xl");
-                input.parentNode.style.position = "relative";
-                input.parentNode.appendChild(list);
+                list.setAttribute("class", "autocomplete-list");
+                // On mobile, append to body for fixed positioning; on desktop, relative to parent
+                if (isMobile()) {
+                    document.body.appendChild(list);
+                } else {
+                    input.parentNode.style.position = "relative";
+                    input.parentNode.appendChild(list);
+                }
+            }
+
+            function showList() {
+                list.classList.add("active");
+                if (isMobile()) {
+                    const backdrop = getBackdrop();
+                    backdrop.style.display = "block";
+                    backdrop.onclick = function () { closeAllLists(); };
+                }
+            }
+
+            function closeAllLists(elmnt) {
+                if (elmnt !== input) {
+                    list.classList.remove("active");
+                    list.innerHTML = '';
+                    const backdrop = getBackdrop();
+                    backdrop.style.display = "none";
+                }
             }
 
             input.addEventListener("input", function (e) {
@@ -969,22 +1785,20 @@
                 if (!val) return false;
 
                 currentFocus = -1;
-                list.classList.add("active");
                 list.innerHTML = '';
+                showList();
 
                 // Improved Search Logic: Multi-term inclusion
-                // "tiny car" -> matches "tiny blue car"
                 const terms = val.toLowerCase().split(/\s+/).filter(t => t.length > 0);
 
                 const matches = products.filter(p => {
                     const nameLower = p.name.toLowerCase();
-                    // Check if ALL terms are present in the name
                     return terms.every(term => nameLower.includes(term));
                 }).slice(0, 20);
 
                 if (matches.length === 0) {
                     const item = document.createElement("div");
-                    item.className = "autocomplete-item text-slate-500 italic";
+                    item.className = "autocomplete-item no-match";
                     item.innerHTML = "No matches found";
                     list.appendChild(item);
                     return;
@@ -994,35 +1808,45 @@
                     const item = document.createElement("div");
                     item.className = "autocomplete-item";
                     const qtyTag = p.qty > 0 ? `<span class='qty-tag'>${p.qty} Pcs</span>` : '';
-                    item.innerHTML = `<span>${p.name}</span> <div class="flex gap-2">${qtyTag} <span class='price-tag'>₹${p.price}</span></div>`;
+                    item.innerHTML = `<span>${p.name}</span> <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0;">${qtyTag} <span class='price-tag'>₹${p.price}</span></div>`;
 
-                    item.addEventListener("click", function () {
+                    // Use both click and touchend for reliable mobile taps
+                    function selectItem(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         input.value = p.name;
                         onSelect(p);
                         closeAllLists();
-                    });
+                    }
+                    item.addEventListener("click", selectItem);
+                    item.addEventListener("touchend", selectItem, { passive: false });
+
                     list.appendChild(item);
                 });
             });
 
+            // Dismiss on blur (helps on mobile when tapping outside)
+            input.addEventListener("blur", function () {
+                // Delay so click/touchend on item fires first
+                setTimeout(() => { closeAllLists(); }, 200);
+            });
+
             input.addEventListener("keydown", function (e) {
-                let items = list.querySelectorAll(".autocomplete-item:not(.text-slate-500)");
+                let items = list.querySelectorAll(".autocomplete-item:not(.no-match)");
                 if (e.key === "ArrowDown") {
                     currentFocus++;
                     addActive(items);
-                    e.preventDefault(); // Prevent cursor move
+                    e.preventDefault();
                 } else if (e.key === "ArrowUp") {
                     currentFocus--;
                     addActive(items);
                     e.preventDefault();
                 } else if (e.key === "Enter") {
-                    // Prevent default enter behavior only if list is active and has items
                     if (list.classList.contains("active") && items.length > 0) {
                         e.preventDefault();
                         if (currentFocus > -1) {
                             if (items) items[currentFocus].click();
                         } else if (items.length > 0) {
-                            // If nothing focused but list open, select first
                             items[0].click();
                         }
                     }
@@ -1044,12 +1868,6 @@
                 }
             }
 
-            function closeAllLists(elmnt) {
-                if (elmnt !== input) {
-                    list.classList.remove("active");
-                }
-            }
-
             document.addEventListener("click", function (e) {
                 closeAllLists(e.target);
             });
@@ -1060,20 +1878,19 @@
             const table = document.getElementById('billBody');
             const rowIdx = ++rowCounter;
             const tr = document.createElement('tr');
-            tr.className = "hover:bg-slate-800/30 transition-colors group";
 
             tr.innerHTML = `
-                <td class="text-center text-slate-500">${rowIdx}</td>
-                <td class="relative" data-label="Description">
-                    <input type="text" id="desc-${rowIdx}" class="w-full bg-transparent border-none p-2 text-sm focus:ring-0" placeholder="Type to search" autocomplete="off">
+                <td class="td-sl">${rowIdx}</td>
+                <td class="td-relative" data-label="Description">
+                    <input type="text" id="desc-${rowIdx}" placeholder="Type to search" autocomplete="off" enterkeyhint="next">
                 </td>
-                <td data-label="Qty"><input type="number" id="qty-${rowIdx}" class="w-full bg-transparent border-none p-2 text-right text-sm font-mono" value="1" min="1"></td>
-                <td data-label="Unit"><input type="text" class="w-full bg-transparent border-none p-2 text-right text-sm text-slate-400" value="Pcs" tabindex="-1"></td>
-                <td data-label="Rate"><input type="number" id="rate-${rowIdx}" class="w-full bg-transparent border-none p-2 text-right text-sm font-mono" value="0.00" onfocus="this.select()"></td>
-                <td data-label="Disc %"><input type="number" id="disc-${rowIdx}" class="w-full bg-transparent border-none p-2 text-right text-sm font-mono" value="0" min="0" max="100" onfocus="this.select()"></td>
-                <td class="text-right p-2 font-mono text-emerald-400" id="amt-${rowIdx}" data-label="Amount">0.00</td>
-                <td class="text-center no-print">
-                   <button onclick="removeRow(this)" class="text-rose-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                <td data-label="Qty"><input type="number" id="qty-${rowIdx}" value="1" min="1" inputmode="decimal" enterkeyhint="next"></td>
+                <td data-label="Unit"><input type="text" value="Pcs" tabindex="-1" style="color:var(--text-secondary);"></td>
+                <td data-label="Rate"><input type="number" id="rate-${rowIdx}" value="0.00" inputmode="decimal" enterkeyhint="next" onfocus="this.select()"></td>
+                <td data-label="Disc %"><input type="number" id="disc-${rowIdx}" value="0" min="0" max="100" inputmode="decimal" enterkeyhint="done" onfocus="this.select()"></td>
+                <td class="td-amount" id="amt-${rowIdx}" data-label="Amount">0.00</td>
+                <td class="td-center no-print">
+                   <button onclick="removeRow(this)" class="btn-remove" aria-label="Remove item">×</button>
                 </td>
             `;
 
@@ -1107,31 +1924,20 @@
                         }
 
                         if (idx < inputs.length - 1) {
-                            // If tab, let default behavior handle it unless we want to force focus
-                            // For Enter we MUST prevent default and move manually
                             if (e.key === 'Enter') {
                                 e.preventDefault();
                                 inputs[idx + 1].focus();
                                 if (inputs[idx + 1].type === 'number') inputs[idx + 1].select();
                             }
                         } else {
-                            // Last field (Disc) -> Calculate and New Row
-                            // If it's the LAST row, add new row.
-                            // If it's not the last row, just move to next row's first input?
-                            // Tally behavior: Enter at end of row -> End of that row -> Start of Next Row
-
-                            // Check if this is the last row in table
                             const rows = document.getElementById('billBody').rows;
                             const isLastRow = (rows[rows.length - 1] === tr);
 
                             if (isLastRow) {
                                 if (e.key === 'Enter' || e.key === 'Tab') {
-                                    // if Tab on last element, default behavior is to leave table. 
-                                    // User wants to add new row.
                                     e.preventDefault();
                                     calculateTotal();
                                     addNewRow();
-                                    // Focus new row, handled by timeout in logic
                                     setTimeout(() => {
                                         const newRows = document.getElementById('billBody').rows;
                                         const lastRow = newRows[newRows.length - 1];
