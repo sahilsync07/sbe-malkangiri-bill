@@ -1006,30 +1006,28 @@
                 max-height: 220px; /* Smaller on mobile */
                 border-width: 1px;
                 border-radius: 4px;
-                position: fixed;
-                left: 8px;
-                right: 8px;
-                width: auto;
-                top: auto;
-                bottom: 0;
-                z-index: 1000;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
-                box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
+                /* Remove fixed position overrides, let it be positioned under input */
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
             }
 
             .autocomplete-item {
                 padding: 14px 12px;
                 font-size: 0.85rem;
                 min-height: 52px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
             }
 
-            .autocomplete-item span {
-                flex: 1;
-                min-width: 0;
+            .autocomplete-item-name-wrap {
+                width: 100%;
                 overflow: hidden;
-                text-overflow: ellipsis;
                 white-space: nowrap;
+            }
+
+            .autocomplete-item-name-wrap marquee {
+                margin: 0;
+                padding: 0;
             }
 
             /* Summary stacked */
@@ -1151,340 +1149,197 @@
         }
 
         /* ============================================================
+           PRINT OUTPUT — hidden on screen, generated at print time
+           ============================================================ */
+
+        #print-output {
+            display: none;
+        }
+
+        /* ============================================================
            PRINT STYLES
            ============================================================ */
 
         @media print {
             @page {
                 size: A4;
-                margin: 5mm 10mm;
+                margin: 5mm;
             }
 
             body {
                 background: white !important;
                 color: #000 !important;
                 padding: 0 !important;
-                font-family: 'Times New Roman', Times, serif;
+                font-family: Arial, Helvetica, sans-serif !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
-                font-size: 11pt;
+                font-size: 8pt;
+                line-height: 1.2;
             }
 
-            /* Hide UI Elements */
-            .no-print,
-            .btn-add,
-            .status-bar,
-            .btn-container,
-            button,
-            ::-webkit-scrollbar {
+            .bill-container, .bill-container::before, .no-print {
                 display: none !important;
             }
 
-            /* Reset Containers */
-            .bill-container {
-                background: none !important;
-                box-shadow: none !important;
-                border: none !important;
-                width: 100% !important;
-                max-width: none !important;
-                min-height: 0 !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            #print-output {
                 display: block !important;
             }
 
-            .bill-container::before {
-                display: none !important;
-            }
-
-            /* Header Section */
-            .invoice-header {
-                text-align: center;
-                border-bottom: 2px solid #000;
-                padding-bottom: 8px;
-                margin-bottom: 12px;
-            }
-
-            .invoice-header h1 {
-                font-size: 18pt;
-                color: #000 !important;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                font-weight: 800;
-                margin-bottom: 4px;
-            }
-
-            .invoice-header h2 {
-                font-size: 14pt;
-                color: #000 !important;
-                font-weight: bold;
-                margin: 0;
-            }
-
-            .invoice-header p {
-                font-size: 10pt;
-                color: #333 !important;
-                margin: 2px 0;
-                line-height: 1.3;
-            }
-
-            .invoice-header span {
-                color: #000 !important;
-            }
-
-            /* Party Details (Compact Grid) */
-            .party-details {
-                display: flex !important;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                gap: 10px;
-                background: none !important;
-                border: 1px solid #ccc !important;
-                border-radius: 4px;
-                padding: 8px !important;
-                margin-bottom: 12px;
-            }
-
-            .party-details > .field-group {
-                flex: 1;
-                min-width: 45%;
-            }
-
-            .party-details .field-row {
-                margin-bottom: 4px;
-                align-items: baseline;
-            }
-
-            .party-details label {
-                font-weight: bold;
-                color: #444 !important;
-                font-size: 10pt;
-                width: auto;
-                margin-right: 8px;
-            }
-
-            .party-details input {
-                background: none !important;
-                border: none !important;
-                border-bottom: 1px dotted #999 !important;
-                color: #000 !important;
-                font-weight: bold;
-                font-size: 11pt;
-                padding: 0 2px !important;
-                height: auto;
+            .tally-bill {
                 width: 100%;
-                font-family: inherit;
-                box-shadow: none !important;
+                color: #000;
+            }
+            .tally-bill + .tally-bill {
+                page-break-before: always;
             }
 
-            /* Hide placeholders in print */
-            input::placeholder {
-                color: transparent;
+            .tally-title {
+                text-align: center;
+                font-weight: bold;
+                font-size: 10pt;
+                text-decoration: underline;
+                margin-bottom: 4px;
+                text-transform: uppercase;
             }
 
-            /* Main Table */
-            .tally-mode,
-            .table-wrap {
-                margin-bottom: 0;
+            .tally-box {
+                border: 1px solid #000;
+                display: flex;
+                flex-direction: column;
             }
 
-            table {
+            .t-row {
+                display: flex;
+                border-bottom: 1px solid #000;
+            }
+
+            .t-col-left {
+                flex: 1;
+                border-right: 1px solid #000;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .t-col-right {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .t-company, .t-buyer {
+                padding: 4px;
+            }
+            .t-buyer {
+                border-top: 1px solid #000;
+                flex: 1;
+            }
+            
+            .t-grid-2 {
+                display: flex;
+                border-bottom: 1px solid #000;
+                flex: 1;
+            }
+            .t-grid-2:last-child {
+                border-bottom: none;
+            }
+            .t-gcol {
+                flex: 1;
+                padding: 2px 4px;
+                border-right: 1px solid #000;
+                min-height: 24px;
+            }
+            .t-gcol:last-child {
+                border-right: none;
+            }
+            .t-gcol-full {
+                flex: 1;
+                padding: 2px 4px;
+            }
+
+            .tally-table-wrapper {
+                border-bottom: 1px solid #000;
+                min-height: 300px;
+            }
+            table.t-table {
                 width: 100%;
                 border-collapse: collapse;
-                border: 1px solid #000;
-                margin-bottom: 10px;
-                display: table !important;
+                table-layout: fixed;
             }
-
-            thead {
-                display: table-header-group !important;
-            }
-
-            tbody {
-                display: table-row-group !important;
-            }
-
-            tr {
-                display: table-row !important;
-                border: 1px solid #000 !important;
-                box-shadow: none !important;
-                background: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            th {
-                background: #e5e5e5 !important;
-                color: #000 !important;
-                border: 1px solid #000 !important;
-                padding: 4px !important;
-                font-size: 10pt;
+            .t-table th {
+                border-right: 1px solid #000;
+                border-bottom: 1px solid #000;
+                padding: 4px 2px;
                 text-align: center;
-                font-weight: bold;
-                display: table-cell !important;
+                font-weight: normal;
+                vertical-align: middle;
             }
-
-            td {
-                border: 1px solid #000 !important;
-                padding: 3px 5px !important;
-                font-size: 10pt;
-                color: #000 !important;
-                background: none !important;
-                display: table-cell !important;
+            .t-table th:last-child {
+                border-right: none;
             }
-
-            /* Hide Mobile Pseudo-elements */
-            td::before {
-                content: none !important;
+            .t-table td {
+                border-right: 1px solid #000;
+                padding: 2px 4px;
+                vertical-align: top;
             }
-
-            /* Hide Empty Rows */
-            .print-hidden,
-            tr.print-hidden {
-                display: none !important;
+            .t-table td:last-child {
+                border-right: none;
             }
-
-            /* Input fields inside table for Print */
-            table input {
-                border: none !important;
-                background: none !important;
-                color: #000 !important;
-                font-size: 10pt !important;
-                padding: 0 !important;
+            .t-table td.num { text-align: right; }
+            .t-table td.cen { text-align: center; }
+            
+            .t-table-totals {
                 width: 100%;
-                font-family: inherit;
+                border-collapse: collapse;
             }
-
-            /* Specific Column Alignments for Print */
-            td:nth-child(1) {
-                text-align: center;
-                width: 30px;
+            .t-table-totals td {
+                border-top: 1px solid #000;
+                padding: 4px;
+                font-weight: bold;
             }
-
-            td:nth-child(3),
-            td:nth-child(4),
-            td:nth-child(5),
-            td:nth-child(6),
-            td:nth-child(7) {
+            
+            .t-words {
+                padding: 4px;
+                border-bottom: 1px solid #000;
+            }
+            .t-tax-summary {
+                width: 100%;
+                border-collapse: collapse;
+                border-bottom: 1px solid #000;
+            }
+            .t-tax-summary th, .t-tax-summary td {
+                border-right: 1px solid #000;
+                border-bottom: 1px solid #000;
+                padding: 2px 4px;
                 text-align: right;
             }
-
-            /* Footer Section */
-            .summary-section {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                gap: 20px !important;
-                width: 100% !important;
-                border: none !important;
-                padding-top: 5px !important;
-                margin-top: 0;
+            .t-tax-summary th { text-align: center; }
+            .t-tax-summary th:last-child, .t-tax-summary td:last-child { border-right: none; }
+            .t-tax-summary tr:last-child td { border-bottom: none; }
+            
+            .t-bank-sig {
+                display: flex;
             }
-
-            .amount-words {
-                border: 1px solid #000 !important;
-                background: none !important;
-                color: #000 !important;
-                padding: 8px;
-                font-size: 10pt;
-                width: 100%;
-                height: fit-content;
+            .t-bank {
+                flex: 1;
+                border-right: 1px solid #000;
+                padding: 4px;
             }
-
-            .amount-words span,
-            .amount-words .not-print-label {
-                color: #000 !important;
+            .t-sig {
+                flex: 1;
+                padding: 4px;
+                text-align: right;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
             }
-
-            .bank-details {
-                border: 1px solid #000 !important;
-                color: #000 !important;
-                margin-top: 10px;
-                padding: 8px;
-            }
-
-            .bank-details p,
-            .bank-details span,
-            .bank-details .bank-title,
-            .bank-details .bank-name,
-            .bank-details .bank-info,
-            .bank-details .bank-info span {
-                color: #000 !important;
-            }
-
-            .summary-left {
-                width: 100% !important;
-            }
-
-            .summary-right {
-                width: 100% !important;
-                margin-top: 0 !important;
-                font-size: 10pt;
-            }
-
-            .not-print-label {
-                font-weight: bold;
-                text-transform: uppercase;
-                border-bottom: 1px solid #eee;
-                margin-bottom: 4px;
-            }
-
-            .summary-right .summary-row {
-                margin-bottom: 3px;
-            }
-
-            .summary-right span,
-            .summary-row .label,
-            .summary-row .value,
-            .summary-row .value-discount,
-            .summary-row-grand .label,
-            .summary-row-grand .value {
-                color: #000 !important;
-            }
-
-            #valGrandTotal {
-                font-size: 14pt;
-                font-weight: bold;
-                border-top: 1px solid #000;
-                border-bottom: 1px double #000;
-                padding: 2px 0;
-                color: #000 !important;
-            }
-
-            #valDiscount {
-                color: #000 !important;
-            }
-
-            input[type="number"] {
-                -moz-appearance: textfield;
-                appearance: textfield;
-            }
-
-            input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-
-            /* Signature */
-            .signature-box {
-                display: flex !important;
-                justify-content: flex-end;
-                margin-top: 30px;
-                margin-bottom: 0;
-                width: 100%;
-            }
-
-            .signature-line {
-                float: right;
-                width: 200px;
-                border-top: 1px solid #000;
-                padding-top: 5px;
+            
+            .t-footer-msg {
                 text-align: center;
-                font-weight: bold;
-                font-size: 10pt;
+                font-size: 7pt;
+                margin-top: 2px;
             }
         }
-    </style>
+</style>
 </head>
 
 <body>
@@ -1573,6 +1428,7 @@
                         <p>SB Account no: <span>36878162058</span></p>
                         <p>IFSC code: <span>SBIN0003068</span></p>
                         <p>SBI ADB RAYAGADA BRANCH</p>
+                        <p>UPI ID: <span>36878162058@sbi</span></p>
                     </div>
                 </div>
             </div>
@@ -1592,6 +1448,16 @@
                 <div class="summary-row" id="rowLessDisc">
                     <span class="label">Less Discount:</span>
                     <span id="valDiscount" class="value-discount">-0.00</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="label">Packing Charges (₹):</span>
+                    <input type="number" id="packingCharges" class="extra-disc-input" value="0" min="0" inputmode="decimal" oninput="calculateTotal()">
+                </div>
+
+                <div class="summary-row">
+                    <span class="label">Transport Charges (₹):</span>
+                    <input type="number" id="transportCharges" class="extra-disc-input" value="0" min="0" inputmode="decimal" oninput="calculateTotal()">
                 </div>
 
                 <div class="summary-divider no-print"></div>
@@ -1636,42 +1502,279 @@
         </div>
     </div>
 
+    <!-- Print Output — dynamically populated by handlePrint(), hidden on screen -->
+    <div id="print-output"></div>
+
     <script>
         // Configuration
         const DATA_URL = 'https://raw.githubusercontent.com/sahilsync07/sbe/refs/heads/main/frontend/public/assets/stock-data.json';
         let products = [];
         let rowCounter = 0;
 
-        // --- Handle Print with Empty Row Cleanup ---
+        // --- Handle Print: Generate Dual-Format Bill (General + GST) ---
         function handlePrint() {
-            // Add 'print-hidden' to empty rows
-            const rows = document.getElementById('billBody').rows;
-            Array.from(rows).forEach(tr => {
-                const descInput = tr.querySelector('input[type="text"][id^="desc"]');
-                const val = descInput ? descInput.value.trim() : "";
+            // 1. Gather data from the form
+            const partyName  = document.getElementById('partyName').value || '';
+            const partyMob   = document.getElementById('partyMob').value || '';
+            const partyPlace = document.getElementById('partyPlace').value || '';
+            const invDateRaw = document.getElementById('invDate').value;
+            const invDate    = invDateRaw ? new Date(invDateRaw).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
 
-                // If description is empty, hide this row for print
-                if (!val) {
-                    tr.classList.add('print-hidden');
-                } else {
-                    tr.classList.remove('print-hidden');
-                }
+            // 2. Gather item rows
+            const items = [];
+            let subTotal = 0;
+            const rows = document.getElementById('billBody').rows;
+            Array.from(rows).forEach((tr, i) => {
+                const desc = (tr.querySelector('input[type="text"][id^="desc"]') || {}).value || '';
+                if (!desc.trim()) return; // skip empty
+                const qty  = parseFloat((tr.querySelector('input[id^="qty"]') || {}).value) || 0;
+                const unit = (tr.querySelector('input[tabindex="-1"]') || {}).value || 'Pcs';
+                const rate = parseFloat((tr.querySelector('input[id^="rate"]') || {}).value) || 0;
+                const disc = parseFloat((tr.querySelector('input[id^="disc"]') || {}).value) || 0;
+                const base = qty * rate;
+                const discAmt = base * (disc / 100);
+                const amount = base - discAmt;
+                subTotal += amount;
+                items.push({ sl: items.length + 1, desc, qty, unit, rate, disc, amount });
             });
 
-            // Hide Discount Rows if Extra Discount is 0
-            const extraDiscVal = parseFloat(document.getElementById('extraDisc').value) || 0;
-            const extraDiscRow = document.getElementById('rowExtraDisc');
-            const lessDiscRow = document.getElementById('rowLessDisc');
-
-            if (extraDiscVal === 0) {
-                extraDiscRow.classList.add('print-hidden');
-                lessDiscRow.classList.add('print-hidden');
-            } else {
-                extraDiscRow.classList.remove('print-hidden');
-                lessDiscRow.classList.remove('print-hidden');
+            if (items.length === 0) {
+                alert('Please add at least one item before printing.');
+                return;
             }
 
-            window.print();
+            // 3. Calculations
+            const extraDiscPerc   = parseFloat(document.getElementById('extraDisc').value) || 0;
+            const extraDiscVal    = subTotal * (extraDiscPerc / 100);
+            const afterExtra      = subTotal - extraDiscVal;
+
+            // Packing & Transport (optional)
+            const packingCharges   = parseFloat(document.getElementById('packingCharges').value) || 0;
+            const transportCharges = parseFloat(document.getElementById('transportCharges').value) || 0;
+            const totalWithCharges = afterExtra + packingCharges + transportCharges;
+
+            // GST Inclusive extraction (5% total = 2.5% CGST + 2.5% SGST)
+            const GST_RATE      = 0.05; // 5%
+            const taxable       = totalWithCharges / (1 + GST_RATE);
+            const cgst          = taxable * 0.025;
+            const sgst          = taxable * 0.025;
+            const gstGrandRaw   = taxable + cgst + sgst;
+            const gstGrandTotal = Math.round(gstGrandRaw);
+            const gstRoundOff   = gstGrandTotal - gstGrandRaw;
+
+            // General bill: simple total (no GST breakdown)
+            const genGrandTotal = Math.round(totalWithCharges);
+            const genRoundOff   = genGrandTotal - totalWithCharges;
+
+            // 4. Generate Tally Style Invoice Page
+            function generateTallyBill(type, isGST) {
+                // Prepare item rows
+                let rowsHTML = '';
+                let totalQty = 0;
+                
+                // Print items
+                items.forEach(it => {
+                    totalQty += it.qty;
+                    rowsHTML += `
+                    <tr>
+                        <td class="cen">${it.sl}</td>
+                        <td><b>${it.desc}</b></td>
+                        <td class="cen"></td>
+                        <td class="num"><b>${it.qty}</b> ${it.unit}</td>
+                        <td class="num">${it.rate.toFixed(2)}</td>
+                        <td class="cen">${it.unit}</td>
+                        <td class="num">${it.disc > 0 ? it.disc.toFixed(1) + '%' : ''}</td>
+                        <td class="num"><b>${it.amount.toFixed(2)}</b></td>
+                    </tr>`;
+                });
+
+                // Add empty padding rows to stretch the table visually
+                const minRows = 14;
+                for(let i = items.length; i < minRows; i++) {
+                    rowsHTML += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+                }
+
+                // Add Extra Discount / Charges if applicable
+                if (extraDiscPerc > 0) {
+                    rowsHTML += `<tr><td></td><td style="text-align:right"><i>Less: Extra Discount (${extraDiscPerc}%)</i></td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>(-) ${extraDiscVal.toFixed(2)}</b></td></tr>`;
+                }
+                if (packingCharges > 0) {
+                    rowsHTML += `<tr><td></td><td style="text-align:right"><i>Packing Charges</i></td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>${packingCharges.toFixed(2)}</b></td></tr>`;
+                }
+                if (transportCharges > 0) {
+                    rowsHTML += `<tr><td></td><td style="text-align:right"><i>Transport Charges</i></td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>${transportCharges.toFixed(2)}</b></td></tr>`;
+                }
+
+                // Add GST Breakdown (only for Tax Invoice)
+                if (isGST) {
+                    rowsHTML += `
+                    <tr><td></td><td style="text-align:right; font-weight:bold; padding-top:10px;">CGST@ 2.5%</td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>${cgst.toFixed(2)}</b></td></tr>
+                    <tr><td></td><td style="text-align:right; font-weight:bold;">SGST@ 2.5%</td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>${sgst.toFixed(2)}</b></td></tr>
+                    `;
+                    if (gstRoundOff !== 0) {
+                        rowsHTML += `<tr><td></td><td style="text-align:right; font-weight:bold;">ROUND OFF</td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>${gstRoundOff > 0 ? '+' : ''}${gstRoundOff.toFixed(2)}</b></td></tr>`;
+                    }
+                } else {
+                    if (genRoundOff !== 0) {
+                        rowsHTML += `<tr><td></td><td style="text-align:right; font-weight:bold;">ROUND OFF</td><td></td><td></td><td></td><td></td><td></td><td class="num"><b>${genRoundOff > 0 ? '+' : ''}${genRoundOff.toFixed(2)}</b></td></tr>`;
+                    }
+                }
+
+                const finalTotal = isGST ? gstGrandTotal : genGrandTotal;
+                
+                // Tax summary table (only for GST)
+                let taxSummaryHTML = '';
+                if (isGST) {
+                    taxSummaryHTML = `
+                    <table class="t-tax-summary">
+                        <tr>
+                            <th rowspan="2">HSN/SAC</th>
+                            <th rowspan="2">Taxable<br>Value</th>
+                            <th colspan="2">CGST</th>
+                            <th colspan="2">SGST/UTGST</th>
+                            <th rowspan="2">Total<br>Tax Amount</th>
+                        </tr>
+                        <tr>
+                            <th>Rate</th><th>Amount</th>
+                            <th>Rate</th><th>Amount</th>
+                        </tr>
+                        <tr>
+                            <td class="cen">-</td>
+                            <td>${taxable.toFixed(2)}</td>
+                            <td>2.50%</td><td>${cgst.toFixed(2)}</td>
+                            <td>2.50%</td><td>${sgst.toFixed(2)}</td>
+                            <td>${(cgst+sgst).toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right; font-weight:bold;">Total</td>
+                            <td style="font-weight:bold;">${taxable.toFixed(2)}</td>
+                            <td></td><td style="font-weight:bold;">${cgst.toFixed(2)}</td>
+                            <td></td><td style="font-weight:bold;">${sgst.toFixed(2)}</td>
+                            <td style="font-weight:bold;">${(cgst+sgst).toFixed(2)}</td>
+                        </tr>
+                    </table>
+                    <div class="t-words" style="border-bottom:1px solid #000; padding:2px 4px;">
+                        <span style="font-size:8pt">Tax Amount (in words) : <b>INR ${rupeesInWords(cgst+sgst)}</b></span>
+                    </div>
+                    `;
+                }
+
+                return `
+                <div class="tally-bill">
+                    <div class="tally-title">${type}</div>
+                    <div class="tally-box">
+                        <div class="t-row">
+                            <div class="t-col-left">
+                                <div class="t-company">
+                                    <span style="font-weight:bold; font-size:10pt;">M/S.SRI BRUNDABANA ENTERPRISES</span><br>
+                                    NEW COLONY, KAPILAS ROAD<br>
+                                    RAYAGADA-765001<br>
+                                    GSTIN/UIN: <b>21ADKPC5405A1ZI</b><br>
+                                    State Name : Odisha, Code : 21<br>
+                                    Contact : 9437094667, 9348343310
+                                </div>
+                                <div class="t-buyer">
+                                    Buyer (Bill to)<br>
+                                    <span style="font-weight:bold; font-size:9pt;">${partyName || '-'}</span><br>
+                                    ${partyPlace ? partyPlace + '<br>' : ''}
+                                    ${partyMob ? 'Mob: ' + partyMob + '<br>' : ''}
+                                    State Name : Odisha, Code : 21
+                                </div>
+                            </div>
+                            <div class="t-col-right">
+                                <div class="t-grid-2">
+                                    <div class="t-gcol">Invoice No.<br><b>-</b></div>
+                                    <div class="t-gcol">Dated<br><b>${invDate || '-'}</b></div>
+                                </div>
+                                <div class="t-grid-2">
+                                    <div class="t-gcol">Delivery Note<br><b>-</b></div>
+                                    <div class="t-gcol">Mode/Terms of Payment<br><b>-</b></div>
+                                </div>
+                                <div class="t-grid-2">
+                                    <div class="t-gcol">Buyer's Order No.<br><b>-</b></div>
+                                    <div class="t-gcol">Dated<br><b>-</b></div>
+                                </div>
+                                <div class="t-grid-2">
+                                    <div class="t-gcol">Dispatched through<br><b>-</b></div>
+                                    <div class="t-gcol">Destination<br><b>-</b></div>
+                                </div>
+                                <div class="t-grid-2">
+                                    <div class="t-gcol-full">Terms of Delivery<br><b>-</b></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tally-table-wrapper">
+                            <table class="t-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:4%">Sl<br>No.</th>
+                                        <th style="width:43%">Description of Goods</th>
+                                        <th style="width:7%">HSN/SAC</th>
+                                        <th style="width:9%">Quantity</th>
+                                        <th style="width:10%">Rate</th>
+                                        <th style="width:5%">per</th>
+                                        <th style="width:7%">Disc. %</th>
+                                        <th style="width:15%">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rowsHTML}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <table class="t-table-totals">
+                            <tr>
+                                <td style="width:47%; text-align:right">Total</td>
+                                <td style="width:7%; text-align:center">-</td>
+                                <td style="width:9%; text-align:right">${totalQty} PCS</td>
+                                <td style="width:10%"></td>
+                                <td style="width:5%"></td>
+                                <td style="width:7%"></td>
+                                <td style="width:15%; text-align:right">₹ ${finalTotal.toFixed(2)}</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="t-words">
+                            <span style="font-size:8pt">Amount Chargeable (in words)</span><br>
+                            <span style="font-weight:bold; font-size:9pt;">INR ${rupeesInWords(finalTotal)}</span>
+                        </div>
+                        
+                        ${taxSummaryHTML}
+                        
+                        <div class="t-bank-sig">
+                            <div class="t-bank">
+                                <span style="font-size:8pt; text-decoration:underline;">Company's Bank Details</span><br>
+                                <table style="font-size:8pt; margin-top:2px; line-height:1.4;">
+                                    <tr><td>Bank Name</td><td>: <b>SBI (ADB)</b></td></tr>
+                                    <tr><td>A/c No.</td><td>: <b>36878162058</b></td></tr>
+                                    <tr><td>Branch & IFSC</td><td>: <b>RAYAGADA & SBIN0003068</b></td></tr>
+                                    <tr><td>UPI ID</td><td>: <b>36878162058@sbi</b></td></tr>
+                                </table>
+                            </div>
+                            <div class="t-sig">
+                                <div style="font-size:8pt;">for <b>M/S.SRI BRUNDABANA ENTERPRISES</b></div>
+                                <div style="font-size:8pt; margin-top:30px;">Authorised Signatory</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="t-footer-msg">SUBJECT TO RAYAGADA JURISDICTION<br>This is a Computer Generated Invoice</div>
+                </div>
+                `;
+            }
+
+            const page1 = generateTallyBill('General Bill', false);
+            const page2 = generateTallyBill('Tax Invoice', true);
+
+            document.getElementById('print-output').innerHTML = page1 + page2;
+// 9. Inject into print output and trigger print
+            document.getElementById('print-output').innerHTML = page1 + page2;
+
+            // Small delay to ensure DOM renders before print dialog
+            requestAnimationFrame(() => {
+                window.print();
+            });
         }
 
         // --- Data Fetching ---
@@ -1752,13 +1855,9 @@
                 list = document.createElement("div");
                 list.setAttribute("id", listId);
                 list.setAttribute("class", "autocomplete-list");
-                // On mobile, append to body for fixed positioning; on desktop, relative to parent
-                if (isMobile()) {
-                    document.body.appendChild(list);
-                } else {
-                    input.parentNode.style.position = "relative";
-                    input.parentNode.appendChild(list);
-                }
+                // Always append to parent node so it sits below input
+                input.parentNode.style.position = "relative";
+                input.parentNode.appendChild(list);
             }
 
             function showList() {
@@ -1778,6 +1877,14 @@
                     backdrop.style.display = "none";
                 }
             }
+
+            input.addEventListener("focus", function () {
+                if (isMobile()) {
+                    setTimeout(() => {
+                        input.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 300); // Wait for keyboard to open
+                }
+            });
 
             input.addEventListener("input", function (e) {
                 const val = this.value;
@@ -1808,9 +1915,24 @@
                     const item = document.createElement("div");
                     item.className = "autocomplete-item";
                     const qtyTag = p.qty > 0 ? `<span class='qty-tag'>${p.qty} Pcs</span>` : '';
-                    item.innerHTML = `<span>${p.name}</span> <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0;">${qtyTag} <span class='price-tag'>₹${p.price}</span></div>`;
+                    
+                    if (isMobile()) {
+                        // Conditionally use marquee for long text on mobile
+                        const nameDisplay = p.name.length > 32 
+                            ? `<marquee scrollamount="3" scrolldelay="30">${p.name}</marquee>`
+                            : `<span>${p.name}</span>`;
+                        
+                        item.innerHTML = `
+                            <div class="autocomplete-item-name-wrap">${nameDisplay}</div>
+                            <div style="display:flex;gap:0.5rem;align-items:center;width:100%;">
+                                ${qtyTag} <span class='price-tag'>₹${p.price}</span>
+                            </div>
+                        `;
+                    } else {
+                        item.innerHTML = `<span>${p.name}</span> <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0;">${qtyTag} <span class='price-tag'>₹${p.price}</span></div>`;
+                    }
 
-                    // Use both click and touchend for reliable mobile taps
+                    // Use click only; avoids accidental selection while scrolling
                     function selectItem(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -1819,7 +1941,6 @@
                         closeAllLists();
                     }
                     item.addEventListener("click", selectItem);
-                    item.addEventListener("touchend", selectItem, { passive: false });
 
                     list.appendChild(item);
                 });
@@ -1985,39 +2106,40 @@
                 subTotal += final;
             });
 
-            // Logic copied from previous app to ensure consistency
+            // Calculations
             const extraDiscPerc = parseFloat(document.getElementById('extraDisc').value) || 0;
             const extraDiscVal = subTotal * (extraDiscPerc / 100);
-
-            const DISCOUNT_FRACTION = 5 / 105;
 
             // 1. Apply extra discount
             const afterExtra = subTotal - extraDiscVal;
 
-            // 2. Calculate GST Extract (12/112)
-            const gstComponent = afterExtra * DISCOUNT_FRACTION;
+            // 2. Add packing & transport charges
+            const packingCharges   = parseFloat(document.getElementById('packingCharges').value) || 0;
+            const transportCharges = parseFloat(document.getElementById('transportCharges').value) || 0;
+            const totalWithCharges = afterExtra + packingCharges + transportCharges;
 
-            // 3. Taxable Base
-            const taxable = afterExtra - gstComponent;
+            // 3. GST Inclusive extraction (5% = 2.5% + 2.5%)
+            const DISCOUNT_FRACTION = 5 / 105;
+            const gstComponent = totalWithCharges * DISCOUNT_FRACTION;
 
-            // 4. CGST/SGST (2.5% each)
+            // 4. Taxable Base
+            const taxable = totalWithCharges - gstComponent;
+
+            // 5. CGST/SGST (2.5% each)
             const cgst = taxable * 0.025;
             const sgst = taxable * 0.025;
 
-            // 5. Grand Total (Should equal afterExtra theoretically, but calculated from components)
+            // 6. Grand Total
             let grandTotal = taxable + cgst + sgst;
 
-            // 6. Round Off
+            // 7. Round Off
             const roundedTotal = Math.round(grandTotal);
             const roundOffDiff = roundedTotal - grandTotal;
             grandTotal = roundedTotal;
 
             // Update UI
             document.getElementById('valSubTotal').innerText = `₹${subTotal.toFixed(2)}`;
-
-            // We show the "GST Extract" as "Less Discount" to match the user's previous semantic
             document.getElementById('valDiscount').innerText = `- ₹${gstComponent.toFixed(2)}`;
-
             document.getElementById('valCGST').innerText = `₹${cgst.toFixed(2)}`;
             document.getElementById('valSGST').innerText = `₹${sgst.toFixed(2)}`;
             document.getElementById('valRoundOff').innerText = `₹${roundOffDiff.toFixed(2)}`;
